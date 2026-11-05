@@ -2,7 +2,8 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import {
   GraduationCap, LayoutDashboard, Users, CalendarCheck,
-  Award, Building2, Presentation, LogOut,
+  Award, Building2, Presentation, LogOut, FileText, CreditCard,
+  CalendarDays, FileQuestion, UserPlus, Briefcase, Hotel, Book, Bus, MessageSquare, IdCard
 } from "lucide-react";
 import { actions, useStore, type Role } from "@/lib/store";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,21 @@ const NAV = [
   { to: "/students", label: "Students", bn: "শিক্ষার্থী", icon: Users, roles: ["admin", "teacher"] },
   { to: "/attendance", label: "Attendance", bn: "উপস্থিতি", icon: CalendarCheck, roles: ["admin", "teacher", "student"] },
   { to: "/results", label: "Results", bn: "ফলাফল", icon: Award, roles: ["admin", "teacher", "student"] },
+  { to: "/routine", label: "Routine", bn: "রুটিন", icon: CalendarDays, roles: ["admin", "teacher", "student"] },
+  { to: "/notices", label: "Notices", bn: "নোটিশ", icon: FileText, roles: ["admin", "teacher", "student"] },
+  { to: "/fees", label: "Fees", bn: "ফি", icon: CreditCard, roles: ["admin", "teacher", "student"] },
+  { to: "/applications", label: "Applications", bn: "আবেদন", icon: FileQuestion, roles: ["admin", "teacher", "student"] },
   { to: "/departments", label: "Departments", bn: "বিভাগ", icon: Building2, roles: ["admin", "teacher", "student"] },
+  
+  // ⬇️ ভবিষ্যতের মডিউলগুলো (Future Scope)
+  { to: "/future", label: "Admission", bn: "ভর্তি", icon: UserPlus, roles: ["admin", "teacher", "student"] },
+  { to: "/future", label: "Faculty", bn: "শিক্ষক", icon: Briefcase, roles: ["admin", "teacher", "student"] },
+  { to: "/future", label: "Hostel", bn: "হোস্টেল", icon: Hotel, roles: ["admin", "teacher", "student"] },
+  { to: "/future", label: "Library", bn: "লাইব্রেরি", icon: Book, roles: ["admin", "teacher", "student"] },
+  { to: "/future", label: "Transport", bn: "পরিবহন", icon: Bus, roles: ["admin", "teacher", "student"] },
+  { to: "/future", label: "SMS Alerts", bn: "এসএমএস", icon: MessageSquare, roles: ["admin", "teacher", "student"] },
+  { to: "/future", label: "ID Card", bn: "আইডি কার্ড", icon: IdCard, roles: ["admin", "teacher", "student"] },
+  
   { to: "/presentation", label: "Presentation", bn: "প্রেজেন্টেশন", icon: Presentation, roles: ["admin", "teacher", "student"] },
 ] as const;
 
@@ -23,7 +38,7 @@ export function AppShell({ title, roles, children }: { title: string; roles?: Ro
   useEffect(() => {
     if (!session) {
       const t = setTimeout(() => {
-        if (!localStorage.getItem("fgpi-sms-v1")?.includes('"session":{')) navigate({ to: "/login" });
+        if (!localStorage.getItem("fgpi-session")) navigate({ to: "/login" });
       }, 50);
       return () => clearTimeout(t);
     }
@@ -38,7 +53,6 @@ export function AppShell({ title, roles, children }: { title: string; roles?: Ro
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* ── Sidebar ── */}
       <aside className="md:w-64 bg-sidebar text-sidebar-foreground md:min-h-screen flex md:flex-col">
         <Link to="/" className="flex items-center gap-2 p-4 md:p-5 border-b border-sidebar-border">
           <GraduationCap className="size-8 text-sidebar-primary" />
@@ -48,10 +62,10 @@ export function AppShell({ title, roles, children }: { title: string; roles?: Ro
           </div>
         </Link>
 
-        <nav className="flex md:flex-col gap-1 p-2 md:p-3 overflow-x-auto flex-1">
-          {NAV.filter((n) => (n.roles as readonly string[]).includes(session.role)).map((n) => (
+        <nav className="flex md:flex-col gap-1 p-2 md:p-3 overflow-x-auto md:overflow-y-auto flex-1 h-[calc(100vh-140px)]">
+          {NAV.filter((n) => (n.roles as readonly string[]).includes(session.role)).map((n, idx) => (
             <Link
-              key={n.to}
+              key={idx}
               to={n.to}
               className="flex items-center gap-3 rounded-md px-3 py-2 text-sm whitespace-nowrap hover:bg-sidebar-accent"
               activeProps={{ className: "bg-sidebar-accent text-sidebar-primary font-semibold" }}
@@ -76,7 +90,6 @@ export function AppShell({ title, roles, children }: { title: string; roles?: Ro
         </div>
       </aside>
 
-      {/* ── Main content ── */}
       <main className="flex-1 p-4 md:p-8 max-w-7xl">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl md:text-3xl font-bold">{title}</h1>
@@ -97,7 +110,6 @@ export function AppShell({ title, roles, children }: { title: string; roles?: Ro
   );
 }
 
-/** Dashboard-এর stat card */
 export function Stat({ label, value, sub }: { label: string; value: ReactNode; sub?: string }) {
   return (
     <div className="rounded-lg bg-card p-5 shadow-card border card-premium card-premium-hover">
