@@ -19,13 +19,14 @@ const NAV = [
   { to: "/applications", label: "Applications", bn: "আবেদন", icon: FileQuestion, roles: ["admin", "teacher", "student"] },
   { to: "/departments", label: "Departments", bn: "বিভাগ", icon: Building2, roles: ["admin", "teacher", "student"] },
   
-  { to: "/future", label: "Admission", bn: "ভর্তি", icon: UserPlus, roles: ["admin", "teacher", "student"] },
-  { to: "/future", label: "Faculty", bn: "শিক্ষক", icon: Briefcase, roles: ["admin", "teacher", "student"] },
-  { to: "/future", label: "Hostel", bn: "হোস্টেল", icon: Hotel, roles: ["admin", "teacher", "student"] },
-  { to: "/future", label: "Library", bn: "লাইব্রেরি", icon: Book, roles: ["admin", "teacher", "student"] },
-  { to: "/future", label: "Transport", bn: "পরিবহন", icon: Bus, roles: ["admin", "teacher", "student"] },
-  { to: "/future", label: "SMS Alerts", bn: "এসএমএস", icon: MessageSquare, roles: ["admin", "teacher", "student"] },
-  { to: "/future", label: "ID Card", bn: "আইডি কার্ড", icon: IdCard, roles: ["admin", "teacher", "student"] },
+  // ⬇️ এখানে আলাদা লিংক বসানো হলো
+  { to: "/admission", label: "Admission", bn: "ভর্তি", icon: UserPlus, roles: ["admin", "teacher", "student"] },
+  { to: "/faculty", label: "Faculty", bn: "শিক্ষক", icon: Briefcase, roles: ["admin", "teacher", "student"] },
+  { to: "/hostel", label: "Hostel", bn: "হোস্টেল", icon: Hotel, roles: ["admin", "teacher", "student"] },
+  { to: "/library", label: "Library", bn: "লাইব্রেরি", icon: Book, roles: ["admin", "teacher", "student"] },
+  { to: "/transport", label: "Transport", bn: "পরিবহন", icon: Bus, roles: ["admin", "teacher", "student"] },
+  { to: "/sms", label: "SMS Alerts", bn: "এসএমএস", icon: MessageSquare, roles: ["admin", "teacher", "student"] },
+  { to: "/idcard", label: "ID Card", bn: "আইডি কার্ড", icon: IdCard, roles: ["admin", "teacher", "student"] },
   
   { to: "/presentation", label: "Presentation", bn: "প্রেজেন্টেশন", icon: Presentation, roles: ["admin", "teacher", "student"] },
 ] as const;
