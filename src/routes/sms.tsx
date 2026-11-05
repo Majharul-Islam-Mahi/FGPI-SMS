@@ -21,14 +21,14 @@ function Sms() {
 
   return (
     <AppShell title="SMS Alerts · এসএমএস">
-      <form onSubmit={submit} className="space-y-3 mb-6 bg-card p-4 rounded-lg border max-w-lg">
+      <form onSubmit={submit} className="space-y-3 mb-8 bg-card p-5 rounded-lg border shadow-sm max-w-lg">
         <Input placeholder="Target (e.g., All Students)" value={target} onChange={e => setTarget(e.target.value)} required />
-        <textarea className="w-full border p-3 rounded-md h-24 bg-transparent" placeholder="Message..." value={message} onChange={e => setMessage(e.target.value)} required />
+        <textarea className="w-full border border-input p-3 rounded-md h-24 bg-transparent text-sm" placeholder="Message..." value={message} onChange={e => setMessage(e.target.value)} required />
         <Button type="submit" className="w-full">Send Alert</Button>
       </form>
       <div className="space-y-3">
         {smsAlerts.map(s => (
-          <div key={s.id} className="p-4 border rounded-lg bg-card">
+          <div key={s.id} className="p-4 border rounded-lg bg-card shadow-sm">
             <div className="text-sm font-bold text-primary">To: {s.target}</div>
             <div className="text-sm mt-1">{s.message}</div>
             <div className="text-xs text-muted-foreground mt-2">{s.date}</div>

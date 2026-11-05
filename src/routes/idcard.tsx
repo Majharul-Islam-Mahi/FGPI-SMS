@@ -14,7 +14,7 @@ function IdCardPage() {
   return (
     <AppShell title="ID Card · আইডি কার্ড">
       <Select value={sid} onValueChange={setSid}>
-        <SelectTrigger className="w-64 mb-8"><SelectValue placeholder="Select Student" /></SelectTrigger>
+        <SelectTrigger className="w-64 mb-8 bg-card"><SelectValue placeholder="Select Student" /></SelectTrigger>
         <SelectContent>{students.map(s => <SelectItem key={s.id} value={s.id}>{s.roll} — {s.name}</SelectItem>)}</SelectContent>
       </Select>
 

@@ -15,14 +15,19 @@ import { Route as ApplicationsRouteImport } from './routes/applications'
 import { Route as AttendanceRouteImport } from './routes/attendance'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DepartmentsRouteImport } from './routes/departments'
+import { Route as FacultyRouteImport } from './routes/faculty'
 import { Route as FeesRouteImport } from './routes/fees'
-import { Route as FutureRouteImport } from './routes/future'
+import { Route as HostelRouteImport } from './routes/hostel'
+import { Route as IdcardRouteImport } from './routes/idcard'
+import { Route as LibraryRouteImport } from './routes/library'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as NoticesRouteImport } from './routes/notices'
 import { Route as PresentationRouteImport } from './routes/presentation'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as RoutineRouteImport } from './routes/routine'
+import { Route as SmsRouteImport } from './routes/sms'
 import { Route as StudentsRouteImport } from './routes/students'
+import { Route as TransportRouteImport } from './routes/transport'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -54,14 +59,29 @@ const DepartmentsRoute = DepartmentsRouteImport.update({
   path: '/departments',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FacultyRoute = FacultyRouteImport.update({
+  id: '/faculty',
+  path: '/faculty',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FeesRoute = FeesRouteImport.update({
   id: '/fees',
   path: '/fees',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FutureRoute = FutureRouteImport.update({
-  id: '/future',
-  path: '/future',
+const HostelRoute = HostelRouteImport.update({
+  id: '/hostel',
+  path: '/hostel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IdcardRoute = IdcardRouteImport.update({
+  id: '/idcard',
+  path: '/idcard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryRoute = LibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -89,9 +109,19 @@ const RoutineRoute = RoutineRouteImport.update({
   path: '/routine',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SmsRoute = SmsRouteImport.update({
+  id: '/sms',
+  path: '/sms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudentsRoute = StudentsRouteImport.update({
   id: '/students',
   path: '/students',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TransportRoute = TransportRouteImport.update({
+  id: '/transport',
+  path: '/transport',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -102,14 +132,19 @@ export interface FileRoutesByFullPath {
   '/attendance': typeof AttendanceRoute
   '/dashboard': typeof DashboardRoute
   '/departments': typeof DepartmentsRoute
+  '/faculty': typeof FacultyRoute
   '/fees': typeof FeesRoute
-  '/future': typeof FutureRoute
+  '/hostel': typeof HostelRoute
+  '/idcard': typeof IdcardRoute
+  '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
   '/notices': typeof NoticesRoute
   '/presentation': typeof PresentationRoute
   '/results': typeof ResultsRoute
   '/routine': typeof RoutineRoute
+  '/sms': typeof SmsRoute
   '/students': typeof StudentsRoute
+  '/transport': typeof TransportRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -118,14 +153,19 @@ export interface FileRoutesByTo {
   '/attendance': typeof AttendanceRoute
   '/dashboard': typeof DashboardRoute
   '/departments': typeof DepartmentsRoute
+  '/faculty': typeof FacultyRoute
   '/fees': typeof FeesRoute
-  '/future': typeof FutureRoute
+  '/hostel': typeof HostelRoute
+  '/idcard': typeof IdcardRoute
+  '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
   '/notices': typeof NoticesRoute
   '/presentation': typeof PresentationRoute
   '/results': typeof ResultsRoute
   '/routine': typeof RoutineRoute
+  '/sms': typeof SmsRoute
   '/students': typeof StudentsRoute
+  '/transport': typeof TransportRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -135,14 +175,19 @@ export interface FileRoutesById {
   '/attendance': typeof AttendanceRoute
   '/dashboard': typeof DashboardRoute
   '/departments': typeof DepartmentsRoute
+  '/faculty': typeof FacultyRoute
   '/fees': typeof FeesRoute
-  '/future': typeof FutureRoute
+  '/hostel': typeof HostelRoute
+  '/idcard': typeof IdcardRoute
+  '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
   '/notices': typeof NoticesRoute
   '/presentation': typeof PresentationRoute
   '/results': typeof ResultsRoute
   '/routine': typeof RoutineRoute
+  '/sms': typeof SmsRoute
   '/students': typeof StudentsRoute
+  '/transport': typeof TransportRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -153,14 +198,19 @@ export interface FileRouteTypes {
     | '/attendance'
     | '/dashboard'
     | '/departments'
+    | '/faculty'
     | '/fees'
-    | '/future'
+    | '/hostel'
+    | '/idcard'
+    | '/library'
     | '/login'
     | '/notices'
     | '/presentation'
     | '/results'
     | '/routine'
+    | '/sms'
     | '/students'
+    | '/transport'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -169,14 +219,19 @@ export interface FileRouteTypes {
     | '/attendance'
     | '/dashboard'
     | '/departments'
+    | '/faculty'
     | '/fees'
-    | '/future'
+    | '/hostel'
+    | '/idcard'
+    | '/library'
     | '/login'
     | '/notices'
     | '/presentation'
     | '/results'
     | '/routine'
+    | '/sms'
     | '/students'
+    | '/transport'
   id:
     | '__root__'
     | '/'
@@ -185,14 +240,19 @@ export interface FileRouteTypes {
     | '/attendance'
     | '/dashboard'
     | '/departments'
+    | '/faculty'
     | '/fees'
-    | '/future'
+    | '/hostel'
+    | '/idcard'
+    | '/library'
     | '/login'
     | '/notices'
     | '/presentation'
     | '/results'
     | '/routine'
+    | '/sms'
     | '/students'
+    | '/transport'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -202,14 +262,19 @@ export interface RootRouteChildren {
   AttendanceRoute: typeof AttendanceRoute
   DashboardRoute: typeof DashboardRoute
   DepartmentsRoute: typeof DepartmentsRoute
+  FacultyRoute: typeof FacultyRoute
   FeesRoute: typeof FeesRoute
-  FutureRoute: typeof FutureRoute
+  HostelRoute: typeof HostelRoute
+  IdcardRoute: typeof IdcardRoute
+  LibraryRoute: typeof LibraryRoute
   LoginRoute: typeof LoginRoute
   NoticesRoute: typeof NoticesRoute
   PresentationRoute: typeof PresentationRoute
   ResultsRoute: typeof ResultsRoute
   RoutineRoute: typeof RoutineRoute
+  SmsRoute: typeof SmsRoute
   StudentsRoute: typeof StudentsRoute
+  TransportRoute: typeof TransportRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -256,6 +321,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DepartmentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/faculty': {
+      id: '/faculty'
+      path: '/faculty'
+      fullPath: '/faculty'
+      preLoaderRoute: typeof FacultyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/fees': {
       id: '/fees'
       path: '/fees'
@@ -263,11 +335,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FeesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/future': {
-      id: '/future'
-      path: '/future'
-      fullPath: '/future'
-      preLoaderRoute: typeof FutureRouteImport
+    '/hostel': {
+      id: '/hostel'
+      path: '/hostel'
+      fullPath: '/hostel'
+      preLoaderRoute: typeof HostelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/idcard': {
+      id: '/idcard'
+      path: '/idcard'
+      fullPath: '/idcard'
+      preLoaderRoute: typeof IdcardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library': {
+      id: '/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof LibraryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -305,11 +391,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoutineRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sms': {
+      id: '/sms'
+      path: '/sms'
+      fullPath: '/sms'
+      preLoaderRoute: typeof SmsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/students': {
       id: '/students'
       path: '/students'
       fullPath: '/students'
       preLoaderRoute: typeof StudentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/transport': {
+      id: '/transport'
+      path: '/transport'
+      fullPath: '/transport'
+      preLoaderRoute: typeof TransportRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -322,14 +422,19 @@ const rootRouteChildren: RootRouteChildren = {
   AttendanceRoute: AttendanceRoute,
   DashboardRoute: DashboardRoute,
   DepartmentsRoute: DepartmentsRoute,
+  FacultyRoute: FacultyRoute,
   FeesRoute: FeesRoute,
-  FutureRoute: FutureRoute,
+  HostelRoute: HostelRoute,
+  IdcardRoute: IdcardRoute,
+  LibraryRoute: LibraryRoute,
   LoginRoute: LoginRoute,
   NoticesRoute: NoticesRoute,
   PresentationRoute: PresentationRoute,
   ResultsRoute: ResultsRoute,
   RoutineRoute: RoutineRoute,
+  SmsRoute: SmsRoute,
   StudentsRoute: StudentsRoute,
+  TransportRoute: TransportRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

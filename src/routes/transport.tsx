@@ -22,15 +22,15 @@ function Transport() {
 
   return (
     <AppShell title="Transport · পরিবহন">
-      <form onSubmit={submit} className="flex gap-3 mb-6 bg-card p-4 rounded-lg border max-w-lg">
+      <form onSubmit={submit} className="flex gap-3 mb-6 bg-card p-4 rounded-lg border shadow-sm max-w-lg">
         <Input placeholder="Route Name" value={route} onChange={e => setRoute(e.target.value)} required />
         <Input placeholder="Bus No" value={bus} onChange={e => setBus(e.target.value)} required />
         <Button type="submit">Add</Button>
       </form>
       <div className="space-y-3">
         {transports.map(t => (
-          <div key={t.id} className="p-4 border rounded-lg flex justify-between items-center bg-card">
-            <span>{t.routeName}</span><Badge>{t.busNo}</Badge>
+          <div key={t.id} className="p-4 border rounded-lg flex justify-between items-center bg-card shadow-sm">
+            <span className="font-medium">{t.routeName}</span><Badge>{t.busNo}</Badge>
           </div>
         ))}
       </div>

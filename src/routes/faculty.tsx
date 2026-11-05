@@ -23,13 +23,13 @@ function Faculty() {
 
   return (
     <AppShell title="Faculty · শিক্ষক">
-      <form onSubmit={submit} className="flex gap-3 mb-6 bg-card p-4 rounded-lg border">
+      <form onSubmit={submit} className="flex flex-col md:flex-row gap-3 mb-6 bg-card p-4 rounded-lg border shadow-sm">
         <Input placeholder="Teacher Name" value={name} onChange={e => setName(e.target.value)} required />
         <Input placeholder="Department (e.g. CST)" value={dept} onChange={e => setDept(e.target.value)} required />
         <Input placeholder="Assigned Course" value={course} onChange={e => setCourse(e.target.value)} required />
         <Button type="submit">Add</Button>
       </form>
-      <div className="border rounded-lg bg-card">
+      <div className="border rounded-lg bg-card shadow-sm overflow-hidden">
         <Table>
           <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Department</TableHead><TableHead>Course</TableHead></TableRow></TableHeader>
           <TableBody>

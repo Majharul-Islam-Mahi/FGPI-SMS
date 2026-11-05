@@ -24,13 +24,13 @@ function Admission() {
 
   return (
     <AppShell title="Admission · ভর্তি">
-      <form onSubmit={submit} className="flex gap-3 mb-6 bg-card p-4 rounded-lg border">
+      <form onSubmit={submit} className="flex flex-col md:flex-row gap-3 mb-6 bg-card p-4 rounded-lg border shadow-sm">
         <Input placeholder="Applicant Name" value={name} onChange={e => setName(e.target.value)} required />
         <Input placeholder="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
         <Input placeholder="GPA" value={gpa} onChange={e => setGpa(e.target.value)} required />
         <Button type="submit">Apply</Button>
       </form>
-      <div className="border rounded-lg bg-card">
+      <div className="border rounded-lg bg-card shadow-sm overflow-hidden">
         <Table>
           <TableHeader><TableRow><TableHead>Name</TableHead><TableHead>Email</TableHead><TableHead>GPA</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
           <TableBody>
