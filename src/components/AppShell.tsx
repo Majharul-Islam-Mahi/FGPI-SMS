@@ -19,7 +19,7 @@ const NAV = [
   { to: "/applications", label: "Applications", bn: "আবেদন", icon: FileQuestion, roles: ["admin", "teacher", "student"] },
   { to: "/departments", label: "Departments", bn: "বিভাগ", icon: Building2, roles: ["admin", "teacher", "student"] },
   
-  // ⬇️ এখানে আলাদা লিংক বসানো হলো
+  // ⬇️ নতুন ৭টি আলাদা পেজের লিংক
   { to: "/admission", label: "Admission", bn: "ভর্তি", icon: UserPlus, roles: ["admin", "teacher", "student"] },
   { to: "/faculty", label: "Faculty", bn: "শিক্ষক", icon: Briefcase, roles: ["admin", "teacher", "student"] },
   { to: "/hostel", label: "Hostel", bn: "হোস্টেল", icon: Hotel, roles: ["admin", "teacher", "student"] },
@@ -50,6 +50,7 @@ export function AppShell({ title, roles, children }: { title: string; roles?: Ro
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
+      {/* ── Sidebar ── */}
       <aside className="md:w-64 bg-sidebar text-sidebar-foreground md:min-h-screen flex md:flex-col">
         <Link to="/" className="flex items-center gap-2 p-4 md:p-5 border-b border-sidebar-border">
           <GraduationCap className="size-8 text-sidebar-primary" />
@@ -82,16 +83,26 @@ export function AppShell({ title, roles, children }: { title: string; roles?: Ro
         </div>
       </aside>
 
+      {/* ── Main content ── */}
       <main className="flex-1 p-4 md:p-8 max-w-7xl">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl md:text-3xl font-bold">{title}</h1>
+          <Button
+            variant="outline"
+            size="sm"
+            className="md:hidden"
+            onClick={() => { actions.logout(); navigate({ to: "/login", replace: true }); }}
+          >
+            <LogOut className="size-4" />
+          </Button>
         </div>
-        {allowed ? children : <p className="text-muted-foreground">Access restricted for your role.</p>}
+        {allowed ? children : <p className="text-muted-foreground">এই পেজটি আপনার জন্য নয় — access restricted for your role.</p>}
       </main>
     </div>
   );
 }
 
+/** Dashboard-এর stat card */
 export function Stat({ label, value, sub }: { label: string; value: ReactNode; sub?: string }) {
   return (
     <div className="rounded-lg bg-card p-5 shadow-card border card-premium card-premium-hover">

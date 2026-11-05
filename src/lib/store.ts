@@ -1,7 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { useSyncExternalStore } from "react";
 
-// ⬇️ আপনার Supabase কানেকশন
 const supabaseUrl = "https://glnznqudtpeqrbbofvuj.supabase.co";
 const supabaseKey = "sb_publishable_t_ECNkw21IatDqlcKp805A_AoCATAA4";
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -18,15 +17,23 @@ export const DEPARTMENTS = [
 export const SEMESTERS = [1, 2, 3, 4, 5, 6, 7, 8];
 export type Role = "admin" | "teacher" | "student";
 
+// Interfaces
 export interface Student { id: string; roll: string; name: string; department: string; semester: number; session: string; phone: string; gender: "Male" | "Female"; }
 export interface AttendanceRecord { date: string; studentId: string; present: boolean; }
 export interface ResultRecord { id: string; studentId: string; subject: string; semester: number; marks: number; }
 export interface NoticeRecord { id: string; title: string; content: string; date: string; author: string; }
 export interface FeeRecord { id: string; studentId: string; amount: number; status: "paid" | "unpaid"; dueDate: string; }
-// ⬇️ RoutineRecord-এ shift যুক্ত করা হলো
 export interface RoutineRecord { id: string; department: string; semester: number; shift: string; day: string; time: string; subject: string; teacher: string; room: string; }
 export interface ApplicationRecord { id: string; studentId: string; type: string; reason: string; status: "pending" | "approved" | "rejected"; date: string; }
 export interface Session { role: Role; name: string; studentId?: string; }
+
+// New Interfaces
+export interface AdmissionRecord { id: string; name: string; email: string; gpa: string; status: string; }
+export interface FacultyRecord { id: string; name: string; department: string; course: string; }
+export interface HostelRecord { id: string; roomNo: string; status: string; }
+export interface LibraryRecord { id: string; title: string; author: string; status: string; }
+export interface TransportRecord { id: string; routeName: string; busNo: string; }
+export interface SmsRecord { id: string; target: string; message: string; date: string; }
 
 interface State {
   students: Student[];
@@ -36,6 +43,12 @@ interface State {
   fees: FeeRecord[];
   routines: RoutineRecord[];
   applications: ApplicationRecord[];
+  admissions: AdmissionRecord[];
+  faculties: FacultyRecord[];
+  hostels: HostelRecord[];
+  libraries: LibraryRecord[];
+  transports: TransportRecord[];
+  smsAlerts: SmsRecord[];
   session: Session | null;
 }
 
@@ -45,7 +58,11 @@ export function gradeFor(marks: number): { grade: string; gp: number } {
   return { grade: "F", gp: 0 };
 }
 
-let state: State = { students: [], attendance: [], results: [], notices: [], fees: [], routines: [], applications: [], session: null };
+let state: State = { 
+  students: [], attendance: [], results: [], notices: [], fees: [], routines: [], applications: [],
+  admissions: [], faculties: [], hostels: [], libraries: [], transports: [], smsAlerts: [],
+  session: null 
+};
 const listeners = new Set<() => void>();
 let loaded = false;
 
@@ -53,7 +70,6 @@ async function load() {
   if (loaded) return;
   loaded = true;
   
-  // ডেটাবেজ থেকে সব ডেটা লোড করা
   const { data: students } = await supabase.from("students").select("*");
   const { data: attendance } = await supabase.from("attendance").select("*");
   const { data: results } = await supabase.from("results").select("*");
@@ -62,7 +78,14 @@ async function load() {
   const { data: routines } = await supabase.from("routines").select("*");
   const { data: applications } = await supabase.from("applications").select("*").order("date", { ascending: false });
   
-  // ডেটা ম্যাপিং
+  // Load new modules
+  const { data: admissions } = await supabase.from("admissions").select("*");
+  const { data: faculties } = await supabase.from("faculties").select("*");
+  const { data: hostels } = await supabase.from("hostels").select("*");
+  const { data: libraries } = await supabase.from("library_books").select("*");
+  const { data: transports } = await supabase.from("transports").select("*");
+  const { data: smsAlerts } = await supabase.from("sms_alerts").select("*");
+  
   if (students) state.students = students as any;
   if (attendance) state.attendance = attendance.map((a: any) => ({ ...a, studentId: a.student_id }));
   if (results) state.results = results.map((r: any) => ({ ...r, studentId: r.student_id }));
@@ -70,6 +93,13 @@ async function load() {
   if (fees) state.fees = fees.map((f: any) => ({ ...f, studentId: f.student_id, dueDate: f.due_date }));
   if (routines) state.routines = routines as any;
   if (applications) state.applications = applications.map((a: any) => ({ ...a, studentId: a.student_id }));
+  
+  if (admissions) state.admissions = admissions as any;
+  if (faculties) state.faculties = faculties as any;
+  if (hostels) state.hostels = hostels.map((h: any) => ({ ...h, roomNo: h.room_no }));
+  if (libraries) state.libraries = libraries as any;
+  if (transports) state.transports = transports.map((t: any) => ({ ...t, routeName: t.route_name, busNo: t.bus_no }));
+  if (smsAlerts) state.smsAlerts = smsAlerts as any;
   
   const savedSession = localStorage.getItem("fgpi-session");
   if (savedSession) state.session = JSON.parse(savedSession);
@@ -153,12 +183,7 @@ export const actions = {
 
   async addRoutine(r: RoutineRecord) {
     set((s) => ({ ...s, routines: [...s.routines, r] }));
-    // ⬇️ ডেটাবেজে shift সহ সেভ করা হচ্ছে
-    await supabase.from("routines").insert({ 
-      id: r.id, department: r.department, semester: r.semester, 
-      shift: r.shift, day: r.day, time: r.time, 
-      subject: r.subject, teacher: r.teacher, room: r.room 
-    });
+    await supabase.from("routines").insert({ id: r.id, department: r.department, semester: r.semester, shift: r.shift, day: r.day, time: r.time, subject: r.subject, teacher: r.teacher, room: r.room });
   },
 
   async addApplication(a: ApplicationRecord) {
@@ -169,6 +194,32 @@ export const actions = {
   async updateApplicationStatus(id: string, status: "approved" | "rejected") {
     set((s) => ({ ...s, applications: s.applications.map(a => a.id === id ? { ...a, status } : a) }));
     await supabase.from("applications").update({ status }).eq("id", id);
+  },
+
+  // ⬇️ নতুন ৬টি অ্যাকশন
+  async addAdmission(a: AdmissionRecord) {
+    set((s) => ({ ...s, admissions: [...s.admissions, a] }));
+    await supabase.from("admissions").insert(a);
+  },
+  async addFaculty(f: FacultyRecord) {
+    set((s) => ({ ...s, faculties: [...s.faculties, f] }));
+    await supabase.from("faculties").insert(f);
+  },
+  async addHostel(h: HostelRecord) {
+    set((s) => ({ ...s, hostels: [...s.hostels, h] }));
+    await supabase.from("hostels").insert({ id: h.id, room_no: h.roomNo, status: h.status });
+  },
+  async addLibrary(l: LibraryRecord) {
+    set((s) => ({ ...s, libraries: [...s.libraries, l] }));
+    await supabase.from("library_books").insert(l);
+  },
+  async addTransport(t: TransportRecord) {
+    set((s) => ({ ...s, transports: [...s.transports, t] }));
+    await supabase.from("transports").insert({ id: t.id, route_name: t.routeName, bus_no: t.busNo });
+  },
+  async addSms(s: SmsRecord) {
+    set((s) => ({ ...s, smsAlerts: [...s.smsAlerts, s] }));
+    await supabase.from("sms_alerts").insert(s);
   }
 };
 
