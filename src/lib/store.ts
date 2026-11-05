@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { useSyncExternalStore } from "react";
 
+// ⬇️ আপনার Supabase কানেকশন
 const supabaseUrl = "https://glnznqudtpeqrbbofvuj.supabase.co";
 const supabaseKey = "sb_publishable_t_ECNkw21IatDqlcKp805A_AoCATAA4";
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -22,7 +23,8 @@ export interface AttendanceRecord { date: string; studentId: string; present: bo
 export interface ResultRecord { id: string; studentId: string; subject: string; semester: number; marks: number; }
 export interface NoticeRecord { id: string; title: string; content: string; date: string; author: string; }
 export interface FeeRecord { id: string; studentId: string; amount: number; status: "paid" | "unpaid"; dueDate: string; }
-export interface RoutineRecord { id: string; department: string; semester: number; day: string; time: string; subject: string; teacher: string; room: string; }
+// ⬇️ RoutineRecord-এ shift যুক্ত করা হলো
+export interface RoutineRecord { id: string; department: string; semester: number; shift: string; day: string; time: string; subject: string; teacher: string; room: string; }
 export interface ApplicationRecord { id: string; studentId: string; type: string; reason: string; status: "pending" | "approved" | "rejected"; date: string; }
 export interface Session { role: Role; name: string; studentId?: string; }
 
@@ -51,6 +53,7 @@ async function load() {
   if (loaded) return;
   loaded = true;
   
+  // ডেটাবেজ থেকে সব ডেটা লোড করা
   const { data: students } = await supabase.from("students").select("*");
   const { data: attendance } = await supabase.from("attendance").select("*");
   const { data: results } = await supabase.from("results").select("*");
@@ -59,6 +62,7 @@ async function load() {
   const { data: routines } = await supabase.from("routines").select("*");
   const { data: applications } = await supabase.from("applications").select("*").order("date", { ascending: false });
   
+  // ডেটা ম্যাপিং
   if (students) state.students = students as any;
   if (attendance) state.attendance = attendance.map((a: any) => ({ ...a, studentId: a.student_id }));
   if (results) state.results = results.map((r: any) => ({ ...r, studentId: r.student_id }));
@@ -149,7 +153,12 @@ export const actions = {
 
   async addRoutine(r: RoutineRecord) {
     set((s) => ({ ...s, routines: [...s.routines, r] }));
-    await supabase.from("routines").insert(r);
+    // ⬇️ ডেটাবেজে shift সহ সেভ করা হচ্ছে
+    await supabase.from("routines").insert({ 
+      id: r.id, department: r.department, semester: r.semester, 
+      shift: r.shift, day: r.day, time: r.time, 
+      subject: r.subject, teacher: r.teacher, room: r.room 
+    });
   },
 
   async addApplication(a: ApplicationRecord) {

@@ -19,7 +19,6 @@ const NAV = [
   { to: "/applications", label: "Applications", bn: "আবেদন", icon: FileQuestion, roles: ["admin", "teacher", "student"] },
   { to: "/departments", label: "Departments", bn: "বিভাগ", icon: Building2, roles: ["admin", "teacher", "student"] },
   
-  // ⬇️ ভবিষ্যতের মডিউলগুলো (Future Scope)
   { to: "/future", label: "Admission", bn: "ভর্তি", icon: UserPlus, roles: ["admin", "teacher", "student"] },
   { to: "/future", label: "Faculty", bn: "শিক্ষক", icon: Briefcase, roles: ["admin", "teacher", "student"] },
   { to: "/future", label: "Hostel", bn: "হোস্টেল", icon: Hotel, roles: ["admin", "teacher", "student"] },
@@ -45,10 +44,7 @@ export function AppShell({ title, roles, children }: { title: string; roles?: Ro
     return undefined;
   }, [session, navigate]);
 
-  if (!session) {
-    return <div className="min-h-screen grid place-items-center text-muted-foreground">Loading…</div>;
-  }
-
+  if (!session) return <div className="min-h-screen grid place-items-center text-muted-foreground">Loading…</div>;
   const allowed = !roles || roles.includes(session.role);
 
   return (
@@ -79,12 +75,7 @@ export function AppShell({ title, roles, children }: { title: string; roles?: Ro
         <div className="p-3 border-t border-sidebar-border hidden md:block">
           <div className="text-sm font-semibold">{session.name}</div>
           <div className="text-xs opacity-70 capitalize mb-2">{session.role}</div>
-          <Button
-            variant="secondary"
-            size="sm"
-            className="w-full"
-            onClick={() => { actions.logout(); navigate({ to: "/login", replace: true }); }}
-          >
+          <Button variant="secondary" size="sm" className="w-full" onClick={() => { actions.logout(); navigate({ to: "/login", replace: true }); }}>
             <LogOut className="size-4" /> Logout
           </Button>
         </div>
@@ -93,18 +84,8 @@ export function AppShell({ title, roles, children }: { title: string; roles?: Ro
       <main className="flex-1 p-4 md:p-8 max-w-7xl">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl md:text-3xl font-bold">{title}</h1>
-          <Button
-            variant="outline"
-            size="sm"
-            className="md:hidden"
-            onClick={() => { actions.logout(); navigate({ to: "/login", replace: true }); }}
-          >
-            <LogOut className="size-4" />
-          </Button>
         </div>
-        {allowed
-          ? children
-          : <p className="text-muted-foreground">এই পেজটি আপনার জন্য নয় — access restricted for your role.</p>}
+        {allowed ? children : <p className="text-muted-foreground">Access restricted for your role.</p>}
       </main>
     </div>
   );
