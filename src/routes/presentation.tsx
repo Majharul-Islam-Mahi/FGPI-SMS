@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 
-// ⬇️ টিম মেম্বারদের ছবি ইমপোর্ট
 import majharul from "@/assets/team/majharul.jpg";
 import minhaj from "@/assets/team/minhaj.jpg";
 import niazur from "@/assets/team/niazur.jpg";
@@ -10,29 +9,37 @@ import manimatus from "@/assets/team/manimatus.jpg";
 import srabanti from "@/assets/team/srabanti.jpg";
 
 export const Route = createFileRoute("/presentation")({
-  head: () => ({
-    meta: [{ title: "Presentation — Student Management System" }],
-  }),
+  head: () => ({ meta: [{ title: "Presentation — Student Management System" }] }),
   component: Deck,
 });
 
 const TEAM = [
   { name: "মাঝারুল ইসলাম", roll: "৮৭৮৬৫৬", role: "টিম লিড + ব্যাকএন্ড", img: majharul, pos: "object-top" },
   { name: "মিনহাজ হোসেন", roll: "৮৭৮৬৬৮", role: "ফ্রন্টএন্ড: অথ ও ড্যাশবোর্ড", img: minhaj, pos: "object-[center_20%]" },
-  { name: "নিয়াজুর রহমান", roll: "৮৭৮৬৭২", role: "ফ্রন্টএন্ড: স্টুডেন্ট ও ডিপার্টমেন্ট", img: niazur, pos: "object-center" },
-  { name: "মনিমাতুস সাদিয়া", roll: "৮৭৮৬৭৪", role: "ফ্রন্টএন্ড: অ্যাটেনডেন্স ও রেজাল্ট", img: manimatus, pos: "object-top" },
+  { name: "নিয়াজুর রহমান", roll: "৮৭৮৬৭২", role: "ফ্রন্টএন্ড: স্টুডেন্ট ও ডিপার্টমেন্ট", img: niazur, pos: "object-center" },
+  { name: "মনিমাতুস সাদিয়া", roll: "৮৭৮৬৭৪", role: "ফ্রন্টএন্ড: অ্যাটেনডেন্স ও রেজাল্ট", img: manimatus, pos: "object-top" },
   { name: "স্রাবন্তী রানী দাস", roll: "৮৭৮৬৭৫", role: "ইউআই/ইউএক্স + প্রেজেন্টেশন + কিউএ", img: srabanti, pos: "object-[center_30%]" },
 ];
 
 const SLIDES = [
-  { kicker: "ফেনী সরকারি পলিটেকনিক ইনস্টিটিউট", title: "স্টুডেন্ট ম্যানেজমেন্ট সিস্টেম", points: ["প্রজেক্ট: স্টুডেন্ট ম্যানেজমেন্ট সিস্টেম ওয়েবসাইট", "১১ জনের টিম · কম্পিউটার সায়েন্স অ্যান্ড টেকনোলজি বিভাগ", "প্রজেক্ট টিম - ১১"] },
-  { kicker: "সমস্যা", title: "কাগজে রেকর্ড রাখলে শিক্ষার্থীর তথ্য\nখুঁজে পাওয়া ও ম্যানেজ করা কঠিন", points: ["কাগজের রেকর্ড ধীরগতির এবং ভুল হওয়ার সম্ভাবনা বেশি", "উপস্থিতি এবং মার্কস আলাদা আলাদা রেজিস্টারে থাকে", "শিক্ষার্থীরা সহজে তাদের নিজেদের তথ্য দেখতে পারে না"] },
+  { 
+    kicker: "ফেনী সরকারি পলিটেকনিক ইনস্টিটিউট", 
+    title: "স্টুডেন্ট ম্যানেজমেন্ট সিস্টেম", 
+    points: ["প্রজেক্ট: স্টুডেন্ট ম্যানেজমেন্ট সিস্টেম ওয়েবসাইট", "১১ জনের টিম · কম্পিউটার সায়েন্স অ্যান্ড টেকনোলজি বিভাগ", "প্রজেক্ট টিম - ১১"] 
+  },
+  { kicker: "সমস্যা", title: "কাগজে রেকর্ড রাখলে শিক্ষার্থীর তথ্য\nখুঁজে পাওয়া ও ম্যানেজ করা কঠিন", points: ["কাগজের রেকর্ড ধীরগতির এবং ভুল হওয়ার সম্ভাবনা বেশি", "উপস্থিতি এবং মার্কস আলাদা আলাদা রেজিস্টারে থাকে", "শিক্ষার্থীরা সহজে তাদের নিজেদের তথ্য দেখতে পারে না"] },
   { kicker: "কেন এটি গুরুত্বপূর্ণ", title: "একটি ওয়েবসাইট, তিনটি রোল,\nস্পষ্ট দায়িত্ব", points: ["অ্যাডমিন — শিক্ষার্থীর রেকর্ড, নোটিশ ও ফি ম্যানেজমেন্ট", "শিক্ষক — উপস্থিতি এবং মার্কস এন্ট্রি করা", "শিক্ষার্থী — নিজের প্রোফাইল, উপস্থিতি, ফলাফল ও ফি দেখা"] },
   { kicker: "সমাধান", title: "একটি ড্যাশবোর্ড সমস্ত শিক্ষার্থীর\nস্পষ্ট ধারণা দেয়", points: ["মোট শিক্ষার্থী · বিভাগ · পাসের হার", "বিভাগ অনুযায়ী শিক্ষার্থীদের চার্ট", "শিক্ষার্থীরা এর পরিবর্তে নিজেদের প্রোফাইল দেখে"] },
   { kicker: "শিক্ষার্থীর রেকর্ড", title: "সহজে শিক্ষার্থীর রেকর্ড\nযোগ, সম্পাদনা, মুছে ফেলা এবং খোঁজা", points: ["অ্যাডমিন শিক্ষার্থীর বিস্তারিত যোগ বা সম্পাদনা করতে পারে", "নাম, রোল, বিভাগ, সেমিস্টার দিয়ে খোঁজা", "ডুপ্লিকেট রোল স্বয়ংক্রিয়ভাবে ব্লক করা হয়"] },
-  { kicker: "প্রধান ফিচারসমূহ", title: "উপস্থিতি, ফলাফল, ফি এবং\nনোটিশ বোর্ড", points: ["শিক্ষক দিন দিন উপস্থিতি মার্ক করেন এবং মার্কস দেন", "BTEB স্কেল অনুযায়ী অটোমেটিক গ্রেড ও জিপিএ হিসাব", "শিক্ষার্থীরা নিজেদের ফি স্ট্যাটাস দেখতে ও পরিশোধ করতে পারে", "ইনস্টিটিউটের জন্য নোটিশ বোর্ড"] },
-  { kicker: "অ্যাডভান্সড মডিউল", title: "ভবিষ্যতের জন্য প্রস্তুত\nআমাদের সিস্টেম", points: ["Admission, Faculty, Library ম্যানেজমেন্ট", "Hostel, Transport ও SMS অ্যালার্ট", "স্বয়ংক্রিয় ID Card জেনারেশন"] },
-  { kicker: "প্রযুক্তি", title: "React এবং Cloud Database\n(Supabase) দিয়ে তৈরি", points: ["React + TanStack Start + Tailwind CSS", "ব্যাকএন্ড ও ডেটাবেজ: Supabase (PostgreSQL)", "ডেটা এখন ক্লাউডে সেভ হয়, যা সব ডিভাইসে দেখা যায়"] },
+  
+  // ⬇️ ৬ নম্বর স্লাইডে সাবজেক্ট-ভিত্তিক হাজিরা আপডেট করা হলো
+  { kicker: "প্রধান ফিচারসমূহ", title: "উপস্থিতি, ফলাফল, ফি এবং\nনোটিশ বোর্ড", points: ["প্রতি সাবজেক্টের আলাদা হাজিরা মার্ক করার আধুনিক ব্যবস্থা", "BTEB স্কেল অনুযায়ী অটোমেটিক গ্রেড ও জিপিএ হিসাব", "শিক্ষার্থীরা নিজেদের ফি স্ট্যাটাস দেখতে ও পরিশোধ করতে পারে", "ইনস্টিটিউটের জন্য নোটিশ বোর্ড"] },
+  
+  // ⬇️ নতুন স্লাইড
+  { kicker: "অ্যাডভান্সড মডিউল", title: "ভবিষ্যতের জন্য প্রস্তুত\nআমাদের সিস্টেম", points: ["Admission, Faculty, Library ম্যানেজমেন্ট", "Hostel, Transport ও SMS অ্যালার্ট সিস্টেম", "স্বয়ংক্রিয় ID Card জেনারেশন"] },
+  
+  { kicker: "লাইভ ডেমো", title: "চলুন এটি লাইভ দেখি", points: ["অ্যাডমিন হিসেবে লগইন → স্টুডেন্ট, নোটিশ ও ফি যোগ করুন", "সাবজেক্ট সিলেক্ট করে হাজিরা মার্ক করুন → একটি ফলাফল যোগ করুন", "শিক্ষার্থী হিসেবে লগইন → জিপিএ, হাজিরা, নোটিশ ও ফি চেক করুন"] },
+  { kicker: "প্রযুক্তি", title: "React এবং Cloud Database\n(Supabase) দিয়ে তৈরি", points: ["React + TanStack Start + Tailwind CSS", "ব্যাকএন্ড ও ডেটাবেজ: Supabase (PostgreSQL)", "ডেটা এখন ক্লাউডে সেভ হয়, যা সব ডিভাইসে দেখা যায়"] },
   { kicker: "আমাদের টিম", title: "টিম মেম্বার", points: [] },
   { kicker: "ধন্যবাদ", title: "ধন্যবাদ!\nপ্রশ্ন ও পরামর্শ", points: ["পরবর্তী পদক্ষেপ: আরও অ্যাডভান্স ফিচার যোগ করা", "সুরক্ষিত অথেনটিকেশন (JWT) এবং ব্যাকআপ", "কোনটি আগে করা উচিত: ফি পেমেন্ট গেটওয়ে, নাকি ট্রান্সক্রিপ্ট জেনারেশন?"] },
 ];
@@ -40,6 +47,7 @@ const SLIDES = [
 function Deck() {
   const [i, setI] = useState(0);
   const box = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
@@ -50,10 +58,18 @@ function Deck() {
     return () => window.removeEventListener("keydown", key);
   }, []);
 
+  // ভিডিও অটোপ্লে ইফেক্ট
+  useEffect(() => {
+    if (i === 10 && videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.play().catch((err) => console.log("Autoplay blocked:", err));
+    }
+  }, [i]);
+
   const s = SLIDES[i]!;
   const isTitleOrEnd = i === 0 || i === SLIDES.length - 1;
-  const isTeamSlide = i === 8;
-  const isLastSlide = i === 9;
+  const isTeamSlide = i === 9; 
+  const isLastSlide = i === 10; 
 
   return (
     <div className="h-screen flex flex-col bg-[#0b1118] overflow-hidden">
@@ -86,15 +102,33 @@ function Deck() {
              </div>
            </div>
           ) : (
-            <div className={`p-[6%] h-full flex flex-col justify-center`}>
-              <div className="text-[1.5vw] text-gold tracking-widest uppercase mb-4">{s.kicker}</div>
-              <h1 className={`${isTitleOrEnd ? "text-[4.5vw]" : "text-[3.5vw]"} font-bold whitespace-pre-line leading-tight`}>{s.title}</h1>
-              {s.points.length > 0 && (
-                <ul className="mt-[5%] space-y-[2%]">
-                  {s.points.map((p, idx) => (
-                    <li key={idx} className="text-[1.8vw] flex gap-4 text-gray-200"><span className="text-gold">■</span> {p}</li>
-                  ))}
-                </ul>
+            <div className={`p-[6%] h-full flex ${isLastSlide ? "flex-row items-center gap-12" : "flex-col justify-center"}`}>
+              <div className={isLastSlide ? "flex-1" : "w-full"}>
+                <div className="text-[1.5vw] text-gold tracking-widest uppercase mb-4">{s.kicker}</div>
+                <h1 className={`${isTitleOrEnd ? "text-[4.5vw]" : "text-[3.5vw]"} font-bold whitespace-pre-line leading-tight`}>{s.title}</h1>
+                {s.points.length > 0 && (
+                  <ul className="mt-[5%] space-y-[2%]">
+                    {s.points.map((p, idx) => (
+                      <li key={idx} className="text-[1.8vw] flex gap-4 text-gray-200"><span className="text-gold">■</span> {p}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              {/* ⬇️ ভিডিও এখানে আছে ⬇️ */}
+              {isLastSlide && (
+                <div className="flex-1 h-[75%] rounded-2xl overflow-hidden border-2 border-gold/40 shadow-[0_0_40px_rgba(212,175,55,0.2)] bg-black relative">
+                  <video 
+                    ref={videoRef}
+                    src="/my-video.mp4" 
+                    autoPlay
+                    muted
+                    controls 
+                    loop 
+                    playsInline
+                    className="w-full h-full object-contain" 
+                  />
+                </div>
               )}
             </div>
           )}

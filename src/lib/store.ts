@@ -19,7 +19,7 @@ export type Role = "admin" | "teacher" | "student";
 
 // Interfaces
 export interface Student { id: string; roll: string; name: string; department: string; semester: number; session: string; phone: string; gender: "Male" | "Female"; }
-export interface AttendanceRecord { date: string; studentId: string; present: boolean; }
+export interface AttendanceRecord { date: string; studentId: string; subject: string; present: boolean; } // ⬅️ সাবজেক্ট যোগ হলো
 export interface ResultRecord { id: string; studentId: string; subject: string; semester: number; marks: number; }
 export interface NoticeRecord { id: string; title: string; content: string; date: string; author: string; }
 export interface FeeRecord { id: string; studentId: string; amount: number; status: "paid" | "unpaid"; dueDate: string; }
@@ -87,7 +87,7 @@ async function load() {
   const { data: smsAlerts } = await supabase.from("sms_alerts").select("*");
   
   if (students) state.students = students as any;
-  if (attendance) state.attendance = attendance.map((a: any) => ({ ...a, studentId: a.student_id }));
+  if (attendance) state.attendance = attendance.map((a: any) => ({ ...a, studentId: a.student_id, subject: a.subject || "General" }));
   if (results) state.results = results.map((r: any) => ({ ...r, studentId: r.student_id }));
   if (notices) state.notices = notices as any;
   if (fees) state.fees = fees.map((f: any) => ({ ...f, studentId: f.student_id, dueDate: f.due_date }));
@@ -151,9 +151,19 @@ export const actions = {
     await supabase.from("students").delete().eq("id", id);
   },
   
-  async setAttendance(date: string, studentId: string, present: boolean) {
-    set((s) => ({ ...s, attendance: [...s.attendance.filter((a) => !(a.date === date && a.studentId === studentId)), { date, studentId, present }] }));
-    await supabase.from("attendance").upsert({ date, student_id: studentId, present }, { onConflict: 'date,student_id' });
+  // ⬇️ সাবজেক্ট সহ হাজিরা
+  async setAttendance(date: string, studentId: string, subject: string, present: boolean) {
+    set((s) => ({ 
+      ...s, 
+      attendance: [
+        ...s.attendance.filter((a) => !(a.date === date && a.studentId === studentId && a.subject === subject)), 
+        { date, studentId, subject, present }
+      ] 
+    }));
+    await supabase.from("attendance").upsert(
+      { date, student_id: studentId, subject, present }, 
+      { onConflict: 'date,student_id,subject' }
+    );
   },
   
   async addResult(r: ResultRecord) {
