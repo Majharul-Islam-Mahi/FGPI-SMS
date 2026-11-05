@@ -6,6 +6,8 @@ import { actions, useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Bus } from "lucide-react";
 
 export const Route = createFileRoute("/transport")({ component: Transport });
 function Transport() {
@@ -22,16 +24,31 @@ function Transport() {
 
   return (
     <AppShell title="Transport · পরিবহন">
-      <form onSubmit={submit} className="flex gap-3 mb-6 bg-card p-4 rounded-lg border shadow-sm max-w-lg">
-        <Input placeholder="Route Name" value={route} onChange={e => setRoute(e.target.value)} required />
-        <Input placeholder="Bus No" value={bus} onChange={e => setBus(e.target.value)} required />
-        <Button type="submit">Add</Button>
-      </form>
-      <div className="space-y-3">
+      <Card className="mb-6 shadow-sm max-w-xl">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Bus className="size-5 text-primary" /> Add Route</CardTitle>
+          <CardDescription>Register a new bus route.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={submit} className="flex flex-col md:flex-row gap-3">
+            <Input placeholder="Route Name" value={route} onChange={e => setRoute(e.target.value)} required />
+            <Input placeholder="Bus No" value={bus} onChange={e => setBus(e.target.value)} required />
+            <Button type="submit">Add Route</Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        {transports.length === 0 && <p className="text-muted-foreground">No routes added yet.</p>}
         {transports.map(t => (
-          <div key={t.id} className="p-4 border rounded-lg flex justify-between items-center bg-card shadow-sm">
-            <span className="font-medium">{t.routeName}</span><Badge>{t.busNo}</Badge>
-          </div>
+          <Card key={t.id} className="shadow-sm flex items-center p-4">
+            <Bus className="size-8 text-muted-foreground mr-4" />
+            <div className="flex-1">
+              <h4 className="font-bold text-lg">{t.routeName}</h4>
+              <p className="text-sm text-muted-foreground">Bus Number: {t.busNo}</p>
+            </div>
+            <Badge className="bg-primary text-primary-foreground">Active</Badge>
+          </Card>
         ))}
       </div>
     </AppShell>
