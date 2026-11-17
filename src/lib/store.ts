@@ -310,13 +310,13 @@ export const actions = {
     if (role === "student") {
       let st = state.students.find((s) => s.roll === username.trim());
       if (!st) {
-        const { data, error } = await supabase
-          .from("students")
-          .select("*")
-          .eq("roll", username.trim())
-          .maybeSingle();
-        if (error || !data) return null;
-        const fetchedStudent = data as unknown as Student;
+        const { data, error } = await supabase.from("students").select("*");
+        if (error) throw error;
+        if (!data) return null;
+        const fetchedStudent = (data as unknown as Student[]).find(
+          (student) => String(student.roll).trim() === username.trim(),
+        );
+        if (!fetchedStudent) return null;
         st = fetchedStudent;
         set((s) => ({ ...s, students: [...s.students, fetchedStudent] }));
       }
