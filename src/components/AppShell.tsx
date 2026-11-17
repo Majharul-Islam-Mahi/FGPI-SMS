@@ -201,3 +201,21 @@ export function AppShell({
     </div>
   );
 }
+
+export function Stat({
+  label,
+  value,
+  sub,
+}: {
+  label: string;
+  value: ReactNode;
+  sub?: string;
+}) {
+  return (
+    <div className="rounded-lg bg-card border p-5 shadow-card card-premium">
+      <div className="text-sm text-muted-foreground">{label}</div>
+      <div className="text-3xl font-display font-bold text-primary">{value}</div>
+      {sub && <div className="text-xs text-muted-foreground mt-1">{sub}</div>}
+    </div>
+  );
+}

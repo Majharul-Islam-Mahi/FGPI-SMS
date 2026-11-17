@@ -31,6 +31,10 @@ export const DEPARTMENTS = [
   },
 ];
 
+export function deptName(code: string): string {
+  return DEPARTMENTS.find((department) => department.code === code)?.name ?? code;
+}
+
 export const SEMESTERS = [1, 2, 3, 4, 5, 6, 7, 8];
 export type Role = "admin" | "teacher" | "student";
 
