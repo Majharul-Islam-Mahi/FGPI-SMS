@@ -1,4 +1,4 @@
-// cspell:ignore সিভিল টেকনোলজি কম্পিউটার সায় মেকানিক্যাল ইলেকট্রিক্যাল পাওয় আর্কিটেকচার
+// cspell:ignore সিভিল টেকনোলজি কম্পিউটার সায়েন্স মেকানিক্যাল ইলেকট্রিক্যাল পাওয়ার আর্কিটেকচার
 import { createClient } from "@supabase/supabase-js";
 import { useSyncExternalStore } from "react";
 
@@ -7,27 +7,27 @@ const supabaseKey = "sb_publishable_t_ECNkw21IatDqlcKp805A_AoCATAA4";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export const DEPARTMENTS = [
-  { code: "CIVIL", name: "Civil Technology", bn: "à¦¸à¦¿à¦­à¦¿à¦² à¦Ÿà§‡à¦•à¦¨à§‹à¦²à¦œà¦¿" },
+  { code: "CIVIL", name: "Civil Technology", bn: "সিভিল টেকনোলজি" },
   {
     code: "CST",
     name: "Computer Science & Technology",
-    bn: "à¦•à¦®à§à¦ªà¦¿à¦‰à¦Ÿà¦¾à¦° à¦¸à¦¾à¦¯à¦¼à§‡à¦¨à§à¦¸",
+    bn: "কম্পিউটার সায়েন্স",
   },
   {
     code: "MECH",
     name: "Mechanical Technology",
-    bn: "à¦®à§‡à¦•à¦¾à¦¨à¦¿à¦•à§à¦¯à¦¾à¦² à¦Ÿà§‡à¦•à¦¨à§‹à¦²à¦œà¦¿",
+    bn: "মেকানিক্যাল টেকনোলজি",
   },
   {
     code: "ELEC",
     name: "Electrical Technology",
-    bn: "à¦‡à¦²à§‡à¦•à¦Ÿà§à¦°à¦¿à¦•à§à¦¯à¦¾à¦² à¦Ÿà§‡à¦•à¦¨à§‹à¦²à¦œà¦¿",
+    bn: "ইলেকট্রিক্যাল টেকনোলজি",
   },
-  { code: "POWER", name: "Power Technology", bn: "à¦ªà¦¾à¦“à¦¯à¦¼à¦¾à¦° à¦Ÿà§‡à¦•à¦¨à§‹à¦²à¦œà¦¿" },
+  { code: "POWER", name: "Power Technology", bn: "পাওয়ার টেকনোলজি" },
   {
     code: "ARCH",
     name: "Architecture Technology",
-    bn: "à¦†à¦°à§à¦•à¦¿à¦Ÿà§‡à¦•à¦šà¦¾à¦° à¦Ÿà§‡à¦•à¦¨à§‹à¦²à¦œà¦¿",
+    bn: "আর্কিটেকচার টেকনোলজি",
   },
 ];
 
@@ -191,6 +191,16 @@ let loaded = false;
 async function load() {
   if (loaded) return;
   loaded = true;
+
+  try {
+    const savedSession = localStorage.getItem("fgpi-session");
+    if (savedSession) state.session = JSON.parse(savedSession) as Session;
+  } catch {
+    localStorage.removeItem("fgpi-session");
+    state.session = null;
+  }
+  listeners.forEach((listener) => listener());
+
   const { data: students } = await supabase.from("students").select("*");
   const { data: attendance } = await supabase.from("attendance").select("*");
   const { data: results } = await supabase.from("results").select("*");
@@ -269,8 +279,6 @@ async function load() {
     }));
   if (smsAlerts) state.smsAlerts = smsAlerts as unknown as SmsRecord[];
 
-  const savedSession = localStorage.getItem("fgpi-session");
-  if (savedSession) state.session = JSON.parse(savedSession);
   listeners.forEach((l) => l());
 }
 
@@ -293,14 +301,25 @@ export function useStore(): State {
 }
 
 export const actions = {
-  login(role: Role, username: string, password: string): Session | null {
+  async login(role: Role, username: string, password: string): Promise<Session | null> {
     let session: Session | null = null;
     if (role === "admin" && username === "admin" && password === "admin123")
       session = { role, name: "Administrator" };
     if (role === "teacher" && username === "teacher" && password === "teacher123")
       session = { role, name: "Teacher" };
     if (role === "student") {
-      const st = state.students.find((s) => s.roll === username.trim());
+      let st = state.students.find((s) => s.roll === username.trim());
+      if (!st) {
+        const { data, error } = await supabase
+          .from("students")
+          .select("*")
+          .eq("roll", username.trim())
+          .maybeSingle();
+        if (error || !data) return null;
+        const fetchedStudent = data as unknown as Student;
+        st = fetchedStudent;
+        set((s) => ({ ...s, students: [...s.students, fetchedStudent] }));
+      }
       if (st && password === "1234") session = { role, name: st.name, studentId: st.id };
     }
     if (session) {

@@ -58,7 +58,7 @@ function Results() {
   };
 
   return (
-    <AppShell title="Results Â· à¦«à¦²à¦¾à¦«à¦²">
+    <AppShell title="Results · ফলাফল">
       {!isStudent && (
         <Select value={current} onValueChange={setSid}>
           <SelectTrigger className="w-80 mb-4">
@@ -67,7 +67,7 @@ function Results() {
           <SelectContent>
             {students.map((s) => (
               <SelectItem key={s.id} value={s.id}>
-                {s.roll} â€” {s.name}
+                {s.roll} — {s.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -78,7 +78,7 @@ function Results() {
           <div>
             <div className="font-display text-xl font-bold">{st.name}</div>
             <div className="text-sm text-muted-foreground">
-              Roll {st.roll} Â· {st.department} Â· Sem {st.semester}
+              Roll {st.roll} · {st.department} · Sem {st.semester}
             </div>
           </div>
           <div className="text-right">

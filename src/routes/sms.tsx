@@ -22,7 +22,7 @@ function Sms() {
   };
 
   return (
-    <AppShell title="SMS Alerts Â· à¦à¦¸à¦à¦®à¦à¦¸">
+    <AppShell title="SMS Alerts · এসএমএস">
       <div className="grid md:grid-cols-2 gap-6">
         <Card className="shadow-sm h-fit">
           <CardHeader>

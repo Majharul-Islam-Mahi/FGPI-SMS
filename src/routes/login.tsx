@@ -12,7 +12,10 @@ export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
       { title: "Login — FGPI Student Management System" },
-      { name: "description", content: "Admin, teacher and student login for the FGPI Student Management System." },
+      {
+        name: "description",
+        content: "Admin, teacher and student login for the FGPI Student Management System.",
+      },
       { property: "og:title", content: "Login — FGPI SMS" },
       { property: "og:description", content: "লগইন করুন — Admin, Teacher, Student" },
     ],
@@ -32,18 +35,33 @@ function Login() {
   const [p, setP] = useState("");
   const navigate = useNavigate();
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const s = actions.login(role, u, p);
-    if (!s) { toast.error("ভুল তথ্য — invalid username or password"); return; }
+    let s;
+    try {
+      s = await actions.login(role, u, p);
+    } catch {
+      toast.error("Could not reach the student records. Please try again.");
+      return;
+    }
+    if (!s) {
+      toast.error("ভুল তথ্য — invalid username or password");
+      return;
+    }
     toast.success(`Welcome, ${s.name}`);
     navigate({ to: "/dashboard" });
   };
 
   return (
     <div className="min-h-screen grid place-items-center bg-hero p-4">
-      <form onSubmit={submit} className="w-full max-w-md rounded-xl bg-card p-8 shadow-card space-y-5">
-        <Link to="/" className="flex items-center gap-2 text-primary font-display font-bold text-xl">
+      <form
+        onSubmit={submit}
+        className="w-full max-w-md rounded-xl bg-card p-8 shadow-card space-y-5"
+      >
+        <Link
+          to="/"
+          className="flex items-center gap-2 text-primary font-display font-bold text-xl"
+        >
           <GraduationCap className="size-7" /> FGPI SMS
         </Link>
         <div>
@@ -65,7 +83,9 @@ function Login() {
           <Label htmlFor="p">Password · পাসওয়ার্ড</Label>
           <Input id="p" type="password" value={p} onChange={(e) => setP(e.target.value)} required />
         </div>
-        <Button type="submit" className="w-full">Login</Button>
+        <Button type="submit" className="w-full">
+          Login
+        </Button>
         <p className="text-xs text-muted-foreground text-center">{HINTS[role]}</p>
       </form>
     </div>

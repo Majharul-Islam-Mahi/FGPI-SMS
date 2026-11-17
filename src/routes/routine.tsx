@@ -59,7 +59,7 @@ function Routine() {
   };
 
   return (
-    <AppShell title="Class Routine Â· à¦•à§à¦²à¦¾à¦¸ à¦°à§à¦Ÿà¦¿à¦¨">
+    <AppShell title="Class Routine · ক্লাস রুটিন">
       {isAdmin && (
         <div className="bg-card border p-4 rounded-lg shadow-sm mb-6">
           <h3 className="font-bold mb-3 text-primary">Add New Class</h3>
