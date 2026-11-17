@@ -2,17 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
 import { DEPARTMENTS, SEMESTERS, useStore } from "@/lib/store";
 
-export const Route = createFileRoute("/departments")({
-  head: () => ({
-    meta: [
-      { title: "Departments — FGPI SMS" },
-      { name: "description", content: "Departments of Feni Govt Polytechnic Institute with semester-wise student counts." },
-      { property: "og:title", content: "Departments — FGPI SMS" },
-      { property: "og:description", content: "বিভাগ ও সেমিস্টারভিত্তিক শিক্ষার্থী সংখ্যা" },
-    ],
-  }),
-  component: Departments,
-});
+export const Route = createFileRoute("/departments")({ component: Departments });
 
 function Departments() {
   const { students } = useStore();
@@ -22,7 +12,10 @@ function Departments() {
         {DEPARTMENTS.map((d) => {
           const list = students.filter((s) => s.department === d.code);
           return (
-            <div key={d.code} className="rounded-lg bg-card border shadow-card p-5 card-premium card-premium-hover">
+            <div
+              key={d.code}
+              className="rounded-lg bg-card border shadow-card p-5 card-premium card-premium-hover"
+            >
               <div className="flex justify-between">
                 <div>
                   <div className="font-display text-lg font-bold">{d.name}</div>
@@ -34,7 +27,9 @@ function Departments() {
                 {SEMESTERS.map((s) => (
                   <div key={s} className="rounded bg-muted text-center py-1 text-xs">
                     <div className="text-muted-foreground">S{s}</div>
-                    <div className="font-semibold">{list.filter((x) => x.semester === s).length}</div>
+                    <div className="font-semibold">
+                      {list.filter((x) => x.semester === s).length}
+                    </div>
                   </div>
                 ))}
               </div>

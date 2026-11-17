@@ -87,7 +87,7 @@ function Deck() {
     <div className="h-screen flex flex-col bg-[#0b1118] overflow-hidden">
       
       {/* Top Bar */}
-      <div className="flex gap-2 p-3 items-center bg-sidebar text-sidebar-foreground flex-shrink-0 z-50">
+      <div className="flex gap-2 p-3 items-center bg-sidebar text-sidebar-foreground shrink-0 z-50">
         <Button asChild variant="secondary" size="sm">
           <Link to="/dashboard">Back to Website</Link>
         </Button>

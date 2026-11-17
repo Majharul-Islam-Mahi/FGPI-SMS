@@ -1,31 +1,40 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
+import { EmptyState } from "@/components/EmptyState";
 import { actions, DEPARTMENTS, SEMESTERS, useStore, type Student } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
-export const Route = createFileRoute("/students")({
-  head: () => ({
-    meta: [
-      { title: "Students — FGPI SMS" },
-      { name: "description", content: "Add, edit and delete student records by department and semester." },
-      { property: "og:title", content: "Students — FGPI SMS" },
-      { property: "og:description", content: "শিক্ষার্থী তালিকা — যোগ, সম্পাদনা ও মুছুন" },
-    ],
-  }),
-  component: Students,
-});
-
+export const Route = createFileRoute("/students")({ component: Students });
 const empty = (): Student => ({
-  id: "", roll: "", name: "", department: "CST",
-  semester: 1, session: "2025-26", phone: "", gender: "Male",
+  id: "",
+  roll: "",
+  name: "",
+  department: "CST",
+  semester: 1,
+  session: "2025-26",
+  phone: "",
+  gender: "Male",
 });
 
 function Students() {
@@ -47,35 +56,47 @@ function Students() {
     e.preventDefault();
     if (!edit) return;
     if (students.some((s) => s.roll === edit.roll && s.id !== edit.id)) {
-      toast.error("এই রোল আগে থেকেই আছে — roll already exists");
+      toast.error("Roll exists!");
       return;
     }
     actions.saveStudent({ ...edit, id: edit.id || `s${Date.now()}` });
-    toast.success(edit.id ? "Student updated" : "Student added");
+    toast.success(edit.id ? "Updated" : "Added");
     setEdit(null);
   };
 
   return (
     <AppShell title="Students · শিক্ষার্থী" roles={["admin", "teacher"]}>
-      {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-4">
+      <div className="flex flex-wrap gap-3 mb-4 items-center">
         <Input
           placeholder="Search name / roll…"
-          value={q} onChange={(e) => setQ(e.target.value)}
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
           className="max-w-xs"
         />
         <Select value={dept} onValueChange={setDept}>
-          <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-56">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All departments</SelectItem>
-            {DEPARTMENTS.map((d) => <SelectItem key={d.code} value={d.code}>{d.name}</SelectItem>)}
+            {DEPARTMENTS.map((d) => (
+              <SelectItem key={d.code} value={d.code}>
+                {d.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Select value={sem} onValueChange={setSem}>
-          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-40">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All semesters</SelectItem>
-            {SEMESTERS.map((s) => <SelectItem key={s} value={String(s)}>Semester {s}</SelectItem>)}
+            {SEMESTERS.map((s) => (
+              <SelectItem key={s} value={String(s)}>
+                Semester {s}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         {canEdit && (
@@ -84,8 +105,6 @@ function Students() {
           </Button>
         )}
       </div>
-
-      {/* Table */}
       <div className="rounded-lg border bg-card shadow-card overflow-x-auto card-premium">
         <Table>
           <TableHeader>
@@ -110,11 +129,12 @@ function Students() {
                 <TableCell>{s.phone}</TableCell>
                 {canEdit && (
                   <TableCell className="text-right whitespace-nowrap">
-                    <Button size="icon" variant="ghost" onClick={() => setEdit(s)} aria-label="Edit">
+                    <Button size="icon" variant="ghost" onClick={() => setEdit(s)}>
                       <Pencil className="size-4" />
                     </Button>
                     <Button
-                      size="icon" variant="ghost" aria-label="Delete"
+                      size="icon"
+                      variant="ghost"
                       onClick={() => {
                         if (confirm(`Delete ${s.name}?`)) {
                           actions.deleteStudent(s.id);
@@ -130,57 +150,97 @@ function Students() {
             ))}
             {!list.length && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
-                  কোনো শিক্ষার্থী পাওয়া যায়নি
+                <TableCell colSpan={canEdit ? 7 : 6} className="p-0">
+                  <EmptyState
+                    icon={Users}
+                    title="No Students Found"
+                    description="Add a student or adjust filters."
+                    {...(canEdit
+                      ? { actionLabel: "Add Student", onAction: () => setEdit(empty()) }
+                      : {})}
+                  />
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-
-      {/* Add / Edit dialog */}
       <Dialog open={!!edit} onOpenChange={(o) => !o && setEdit(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{edit?.id ? "Edit Student" : "Add Student · নতুন শিক্ষার্থী"}</DialogTitle>
+            <DialogTitle>{edit?.id ? "Edit Student" : "Add Student"}</DialogTitle>
           </DialogHeader>
           {edit && (
             <form onSubmit={save} className="grid grid-cols-2 gap-3">
               <div className="col-span-2 space-y-1">
                 <Label>Name</Label>
-                <Input required value={edit.name} onChange={(e) => setEdit({ ...edit, name: e.target.value })} />
+                <Input
+                  required
+                  value={edit.name}
+                  onChange={(e) => setEdit({ ...edit, name: e.target.value })}
+                />
               </div>
               <div className="space-y-1">
                 <Label>Roll</Label>
-                <Input required value={edit.roll} onChange={(e) => setEdit({ ...edit, roll: e.target.value })} />
+                <Input
+                  required
+                  value={edit.roll}
+                  onChange={(e) => setEdit({ ...edit, roll: e.target.value })}
+                />
               </div>
               <div className="space-y-1">
                 <Label>Session</Label>
-                <Input required value={edit.session} onChange={(e) => setEdit({ ...edit, session: e.target.value })} />
+                <Input
+                  required
+                  value={edit.session}
+                  onChange={(e) => setEdit({ ...edit, session: e.target.value })}
+                />
               </div>
               <div className="col-span-2 space-y-1">
                 <Label>Department</Label>
-                <Select value={edit.department} onValueChange={(v) => setEdit({ ...edit, department: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select
+                  value={edit.department}
+                  onValueChange={(v) => setEdit({ ...edit, department: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    {DEPARTMENTS.map((d) => <SelectItem key={d.code} value={d.code}>{d.name}</SelectItem>)}
+                    {DEPARTMENTS.map((d) => (
+                      <SelectItem key={d.code} value={d.code}>
+                        {d.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1">
                 <Label>Semester</Label>
-                <Select value={String(edit.semester)} onValueChange={(v) => setEdit({ ...edit, semester: +v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select
+                  value={String(edit.semester)}
+                  onValueChange={(v) => setEdit({ ...edit, semester: +v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    {SEMESTERS.map((s) => <SelectItem key={s} value={String(s)}>{s}</SelectItem>)}
+                    {SEMESTERS.map((s) => (
+                      <SelectItem key={s} value={String(s)}>
+                        {s}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1">
                 <Label>Gender</Label>
-                <Select value={edit.gender} onValueChange={(v) => setEdit({ ...edit, gender: v as Student["gender"] })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                <Select
+                  value={edit.gender}
+                  onValueChange={(v) => setEdit({ ...edit, gender: v as Student["gender"] })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Male">Male</SelectItem>
                     <SelectItem value="Female">Female</SelectItem>
@@ -189,9 +249,14 @@ function Students() {
               </div>
               <div className="col-span-2 space-y-1">
                 <Label>Phone</Label>
-                <Input value={edit.phone} onChange={(e) => setEdit({ ...edit, phone: e.target.value })} />
+                <Input
+                  value={edit.phone}
+                  onChange={(e) => setEdit({ ...edit, phone: e.target.value })}
+                />
               </div>
-              <Button type="submit" className="col-span-2">Save · সংরক্ষণ</Button>
+              <Button type="submit" className="col-span-2">
+                Save
+              </Button>
             </form>
           )}
         </DialogContent>
