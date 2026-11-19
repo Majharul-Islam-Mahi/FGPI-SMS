@@ -1,25 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import {
-  GraduationCap,
-  LayoutDashboard,
-  Users,
-  CalendarCheck,
-  Award,
-  Building2,
-  Presentation,
-  LogOut,
-  FileText,
-  CreditCard,
-  CalendarDays,
-  FileQuestion,
-  UserPlus,
-  Briefcase,
-  Hotel,
-  Book,
-  Bus,
-  MessageSquare,
-  IdCard,
+  GraduationCap, LayoutDashboard, Users, CalendarCheck,
+  Award, Building2, Presentation, LogOut, FileText, CreditCard,
+  CalendarDays, FileQuestion, UserPlus, Briefcase, Hotel, Book, Bus,
+  MessageSquare, IdCard, Landmark, BellRing, Wallet,
 } from "lucide-react";
 import { actions, useStore, type Role } from "@/lib/store";
 import { Button } from "@/components/ui/button";
@@ -28,91 +13,51 @@ const NAV_GROUPS = [
   {
     title: "Main",
     items: [
-      {
-        to: "/dashboard",
-        label: "Dashboard",
-        icon: LayoutDashboard,
-        roles: ["admin", "teacher", "student"],
-      },
+      { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ["admin", "teacher", "student"] },
       { to: "/students", label: "Students", icon: Users, roles: ["admin", "teacher"] },
-      {
-        to: "/attendance",
-        label: "Attendance",
-        icon: CalendarCheck,
-        roles: ["admin", "teacher", "student"],
-      },
+      { to: "/attendance", label: "Attendance", icon: CalendarCheck, roles: ["admin", "teacher", "student"] },
       { to: "/results", label: "Results", icon: Award, roles: ["admin", "teacher", "student"] },
     ],
   },
   {
-    title: "Academic & Admin",
+    title: "Academic",
     items: [
-      {
-        to: "/routine",
-        label: "Routine",
-        icon: CalendarDays,
-        roles: ["admin", "teacher", "student"],
-      },
+      { to: "/routine", label: "Routine", icon: CalendarDays, roles: ["admin", "teacher", "student"] },
       { to: "/notices", label: "Notices", icon: FileText, roles: ["admin", "teacher", "student"] },
-      { to: "/fees", label: "Fees", icon: CreditCard, roles: ["admin", "teacher", "student"] },
-      {
-        to: "/applications",
-        label: "Applications",
-        icon: FileQuestion,
-        roles: ["admin", "teacher", "student"],
-      },
-      {
-        to: "/departments",
-        label: "Departments",
-        icon: Building2,
-        roles: ["admin", "teacher", "student"],
-      },
+      { to: "/departments", label: "Departments", icon: Building2, roles: ["admin", "teacher", "student"] },
     ],
   },
   {
-    title: "Advanced Modules",
+    title: "Administration",
     items: [
-      {
-        to: "/admission",
-        label: "Admission",
-        icon: UserPlus,
-        roles: ["admin", "teacher", "student"],
-      },
-      { to: "/faculty", label: "Faculty", icon: Briefcase, roles: ["admin", "teacher", "student"] },
+      { to: "/fees", label: "Fees", icon: CreditCard, roles: ["admin", "teacher", "student"] },
+      { to: "/applications", label: "Applications", icon: FileQuestion, roles: ["admin", "teacher", "student"] },
+      { to: "/fee-ledger", label: "Fee Ledger", icon: Wallet, roles: ["admin"] },
+      { to: "/sms", label: "SMS Alerts", icon: MessageSquare, roles: ["admin", "teacher"] },
+    ],
+  },
+  {
+    title: "Campus Services",
+    items: [
+      { to: "/admission", label: "Admission", icon: UserPlus, roles: ["admin", "teacher"] },
+      { to: "/faculty", label: "Faculty", icon: Briefcase, roles: ["admin", "teacher"] },
       { to: "/hostel", label: "Hostel", icon: Hotel, roles: ["admin", "teacher", "student"] },
       { to: "/library", label: "Library", icon: Book, roles: ["admin", "teacher", "student"] },
       { to: "/transport", label: "Transport", icon: Bus, roles: ["admin", "teacher", "student"] },
-      {
-        to: "/sms",
-        label: "SMS Alerts",
-        icon: MessageSquare,
-        roles: ["admin", "teacher", "student"],
-      },
       { to: "/idcard", label: "ID Card", icon: IdCard, roles: ["admin", "teacher", "student"] },
     ],
   },
   {
-    title: "Presentation",
+    title: "Reports & Portals",
     items: [
-      {
-        to: "/presentation",
-        label: "View Slides",
-        icon: Presentation,
-        roles: ["admin", "teacher", "student"],
-      },
+      { to: "/student-portal", label: "Student Portal", icon: GraduationCap, roles: ["student"] },
+      { to: "/teacher-portal", label: "Teacher Portal", icon: Award, roles: ["teacher", "admin"] },
+      { to: "/presentation", label: "Presentation", icon: Presentation, roles: ["admin", "teacher", "student"] },
     ],
   },
 ] as const;
 
-export function AppShell({
-  title,
-  roles,
-  children,
-}: {
-  title: string;
-  roles?: Role[];
-  children: ReactNode;
-}) {
+export function AppShell({ title, roles, children }: { title: string; roles?: Role[]; children: ReactNode }) {
   const { session } = useStore();
   const navigate = useNavigate();
 
@@ -126,10 +71,7 @@ export function AppShell({
     return undefined;
   }, [session, navigate]);
 
-  if (!session)
-    return (
-      <div className="min-h-screen grid place-items-center text-muted-foreground">Loading…</div>
-    );
+  if (!session) return <div className="min-h-screen grid place-items-center text-muted-foreground">Loading…</div>;
   const allowed = !roles || roles.includes(session.role);
 
   return (
@@ -159,9 +101,7 @@ export function AppShell({
                       key={idx}
                       to={n.to}
                       className="flex items-center gap-3 rounded-md px-3 py-2 text-sm whitespace-nowrap transition-colors hover:bg-sidebar-accent"
-                      activeProps={{
-                        className: "bg-sidebar-accent text-sidebar-primary font-semibold",
-                      }}
+                      activeProps={{ className: "bg-sidebar-accent text-sidebar-primary font-semibold" }}
                     >
                       <n.icon className="size-4 shrink-0" />
                       <span>{n.label}</span>
@@ -179,10 +119,7 @@ export function AppShell({
             variant="outline"
             size="sm"
             className="w-full text-sidebar-foreground border-sidebar-border hover:bg-sidebar-accent"
-            onClick={() => {
-              actions.logout();
-              navigate({ to: "/login", replace: true });
-            }}
+            onClick={() => { actions.logout(); navigate({ to: "/login", replace: true }); }}
           >
             <LogOut className="size-4 mr-2" /> Logout
           </Button>
@@ -192,25 +129,13 @@ export function AppShell({
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl md:text-3xl font-bold text-foreground">{title}</h1>
         </div>
-        {allowed ? (
-          children
-        ) : (
-          <p className="text-muted-foreground">Access restricted for your role.</p>
-        )}
+        {allowed ? children : <p className="text-muted-foreground">Access restricted for your role.</p>}
       </main>
     </div>
   );
 }
 
-export function Stat({
-  label,
-  value,
-  sub,
-}: {
-  label: string;
-  value: ReactNode;
-  sub?: string;
-}) {
+export function Stat({ label, value, sub }: { label: string; value: ReactNode; sub?: string }) {
   return (
     <div className="rounded-lg bg-card border p-5 shadow-card card-premium">
       <div className="text-sm text-muted-foreground">{label}</div>
