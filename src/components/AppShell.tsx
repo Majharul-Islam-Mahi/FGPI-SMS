@@ -4,10 +4,11 @@ import {
   GraduationCap, LayoutDashboard, Users, CalendarCheck,
   Award, Building2, Presentation, LogOut, FileText, CreditCard,
   CalendarDays, FileQuestion, UserPlus, Briefcase, Hotel, Book, Bus,
-  MessageSquare, IdCard, Landmark, BellRing, Wallet,
+  MessageSquare, IdCard, Wallet, BookOpen,
 } from "lucide-react";
 import { actions, useStore, type Role } from "@/lib/store";
 import { Button } from "@/components/ui/button";
+import { LoadingScreen } from "@/components/LoadingScreen";
 
 const NAV_GROUPS = [
   {
@@ -22,6 +23,7 @@ const NAV_GROUPS = [
   {
     title: "Academic",
     items: [
+      { to: "/subjects", label: "Subjects", icon: BookOpen, roles: ["admin", "teacher", "student"] },
       { to: "/routine", label: "Routine", icon: CalendarDays, roles: ["admin", "teacher", "student"] },
       { to: "/notices", label: "Notices", icon: FileText, roles: ["admin", "teacher", "student"] },
       { to: "/departments", label: "Departments", icon: Building2, roles: ["admin", "teacher", "student"] },
@@ -58,20 +60,20 @@ const NAV_GROUPS = [
 ] as const;
 
 export function AppShell({ title, roles, children }: { title: string; roles?: Role[]; children: ReactNode }) {
-  const { session } = useStore();
+  const { session, isLoading } = useStore();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!session) {
-      const t = setTimeout(() => {
-        if (!localStorage.getItem("fgpi-session")) navigate({ to: "/login" });
-      }, 50);
-      return () => clearTimeout(t);
+    if (!isLoading && !session) {
+      navigate({ to: "/login", replace: true });
     }
-    return undefined;
-  }, [session, navigate]);
+  }, [isLoading, session, navigate]);
 
-  if (!session) return <div className="min-h-screen grid place-items-center text-muted-foreground">Loading…</div>;
+  // ⬇️ ডেটা লোড হচ্ছে বা সেশন চেক হচ্ছে — সুন্দর লোডিং স্ক্রিন দেখাবে
+  if (isLoading || !session) {
+    return <LoadingScreen message="Loading Dashboard" />;
+  }
+
   const allowed = !roles || roles.includes(session.role);
 
   return (

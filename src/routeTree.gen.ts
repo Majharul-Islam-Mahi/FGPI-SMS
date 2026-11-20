@@ -16,6 +16,7 @@ import { Route as AttendanceRouteImport } from './routes/attendance'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DepartmentsRouteImport } from './routes/departments'
 import { Route as FacultyRouteImport } from './routes/faculty'
+import { Route as FeeLedgerRouteImport } from './routes/fee-ledger'
 import { Route as FeesRouteImport } from './routes/fees'
 import { Route as HostelRouteImport } from './routes/hostel'
 import { Route as IdcardRouteImport } from './routes/idcard'
@@ -26,7 +27,9 @@ import { Route as PresentationRouteImport } from './routes/presentation'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as RoutineRouteImport } from './routes/routine'
 import { Route as SmsRouteImport } from './routes/sms'
+import { Route as StudentPortalRouteImport } from './routes/student-portal'
 import { Route as StudentsRouteImport } from './routes/students'
+import { Route as TeacherPortalRouteImport } from './routes/teacher-portal'
 import { Route as TransportRouteImport } from './routes/transport'
 
 const IndexRoute = IndexRouteImport.update({
@@ -62,6 +65,11 @@ const DepartmentsRoute = DepartmentsRouteImport.update({
 const FacultyRoute = FacultyRouteImport.update({
   id: '/faculty',
   path: '/faculty',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeeLedgerRoute = FeeLedgerRouteImport.update({
+  id: '/fee-ledger',
+  path: '/fee-ledger',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeesRoute = FeesRouteImport.update({
@@ -114,9 +122,19 @@ const SmsRoute = SmsRouteImport.update({
   path: '/sms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StudentPortalRoute = StudentPortalRouteImport.update({
+  id: '/student-portal',
+  path: '/student-portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudentsRoute = StudentsRouteImport.update({
   id: '/students',
   path: '/students',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeacherPortalRoute = TeacherPortalRouteImport.update({
+  id: '/teacher-portal',
+  path: '/teacher-portal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TransportRoute = TransportRouteImport.update({
@@ -133,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/departments': typeof DepartmentsRoute
   '/faculty': typeof FacultyRoute
+  '/fee-ledger': typeof FeeLedgerRoute
   '/fees': typeof FeesRoute
   '/hostel': typeof HostelRoute
   '/idcard': typeof IdcardRoute
@@ -143,7 +162,9 @@ export interface FileRoutesByFullPath {
   '/results': typeof ResultsRoute
   '/routine': typeof RoutineRoute
   '/sms': typeof SmsRoute
+  '/student-portal': typeof StudentPortalRoute
   '/students': typeof StudentsRoute
+  '/teacher-portal': typeof TeacherPortalRoute
   '/transport': typeof TransportRoute
 }
 export interface FileRoutesByTo {
@@ -154,6 +175,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/departments': typeof DepartmentsRoute
   '/faculty': typeof FacultyRoute
+  '/fee-ledger': typeof FeeLedgerRoute
   '/fees': typeof FeesRoute
   '/hostel': typeof HostelRoute
   '/idcard': typeof IdcardRoute
@@ -164,7 +186,9 @@ export interface FileRoutesByTo {
   '/results': typeof ResultsRoute
   '/routine': typeof RoutineRoute
   '/sms': typeof SmsRoute
+  '/student-portal': typeof StudentPortalRoute
   '/students': typeof StudentsRoute
+  '/teacher-portal': typeof TeacherPortalRoute
   '/transport': typeof TransportRoute
 }
 export interface FileRoutesById {
@@ -176,6 +200,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/departments': typeof DepartmentsRoute
   '/faculty': typeof FacultyRoute
+  '/fee-ledger': typeof FeeLedgerRoute
   '/fees': typeof FeesRoute
   '/hostel': typeof HostelRoute
   '/idcard': typeof IdcardRoute
@@ -186,7 +211,9 @@ export interface FileRoutesById {
   '/results': typeof ResultsRoute
   '/routine': typeof RoutineRoute
   '/sms': typeof SmsRoute
+  '/student-portal': typeof StudentPortalRoute
   '/students': typeof StudentsRoute
+  '/teacher-portal': typeof TeacherPortalRoute
   '/transport': typeof TransportRoute
 }
 export interface FileRouteTypes {
@@ -199,6 +226,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/departments'
     | '/faculty'
+    | '/fee-ledger'
     | '/fees'
     | '/hostel'
     | '/idcard'
@@ -209,7 +237,9 @@ export interface FileRouteTypes {
     | '/results'
     | '/routine'
     | '/sms'
+    | '/student-portal'
     | '/students'
+    | '/teacher-portal'
     | '/transport'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -220,6 +250,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/departments'
     | '/faculty'
+    | '/fee-ledger'
     | '/fees'
     | '/hostel'
     | '/idcard'
@@ -230,7 +261,9 @@ export interface FileRouteTypes {
     | '/results'
     | '/routine'
     | '/sms'
+    | '/student-portal'
     | '/students'
+    | '/teacher-portal'
     | '/transport'
   id:
     | '__root__'
@@ -241,6 +274,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/departments'
     | '/faculty'
+    | '/fee-ledger'
     | '/fees'
     | '/hostel'
     | '/idcard'
@@ -251,7 +285,9 @@ export interface FileRouteTypes {
     | '/results'
     | '/routine'
     | '/sms'
+    | '/student-portal'
     | '/students'
+    | '/teacher-portal'
     | '/transport'
   fileRoutesById: FileRoutesById
 }
@@ -263,6 +299,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   DepartmentsRoute: typeof DepartmentsRoute
   FacultyRoute: typeof FacultyRoute
+  FeeLedgerRoute: typeof FeeLedgerRoute
   FeesRoute: typeof FeesRoute
   HostelRoute: typeof HostelRoute
   IdcardRoute: typeof IdcardRoute
@@ -273,7 +310,9 @@ export interface RootRouteChildren {
   ResultsRoute: typeof ResultsRoute
   RoutineRoute: typeof RoutineRoute
   SmsRoute: typeof SmsRoute
+  StudentPortalRoute: typeof StudentPortalRoute
   StudentsRoute: typeof StudentsRoute
+  TeacherPortalRoute: typeof TeacherPortalRoute
   TransportRoute: typeof TransportRoute
 }
 
@@ -326,6 +365,13 @@ declare module '@tanstack/react-router' {
       path: '/faculty'
       fullPath: '/faculty'
       preLoaderRoute: typeof FacultyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fee-ledger': {
+      id: '/fee-ledger'
+      path: '/fee-ledger'
+      fullPath: '/fee-ledger'
+      preLoaderRoute: typeof FeeLedgerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fees': {
@@ -398,11 +444,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SmsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/student-portal': {
+      id: '/student-portal'
+      path: '/student-portal'
+      fullPath: '/student-portal'
+      preLoaderRoute: typeof StudentPortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/students': {
       id: '/students'
       path: '/students'
       fullPath: '/students'
       preLoaderRoute: typeof StudentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/teacher-portal': {
+      id: '/teacher-portal'
+      path: '/teacher-portal'
+      fullPath: '/teacher-portal'
+      preLoaderRoute: typeof TeacherPortalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/transport': {
@@ -423,6 +483,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   DepartmentsRoute: DepartmentsRoute,
   FacultyRoute: FacultyRoute,
+  FeeLedgerRoute: FeeLedgerRoute,
   FeesRoute: FeesRoute,
   HostelRoute: HostelRoute,
   IdcardRoute: IdcardRoute,
@@ -433,7 +494,9 @@ const rootRouteChildren: RootRouteChildren = {
   ResultsRoute: ResultsRoute,
   RoutineRoute: RoutineRoute,
   SmsRoute: SmsRoute,
+  StudentPortalRoute: StudentPortalRoute,
   StudentsRoute: StudentsRoute,
+  TeacherPortalRoute: TeacherPortalRoute,
   TransportRoute: TransportRoute,
 }
 export const routeTree = rootRouteImport
