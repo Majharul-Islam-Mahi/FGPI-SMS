@@ -29,6 +29,7 @@ import { Route as RoutineRouteImport } from './routes/routine'
 import { Route as SmsRouteImport } from './routes/sms'
 import { Route as StudentPortalRouteImport } from './routes/student-portal'
 import { Route as StudentsRouteImport } from './routes/students'
+import { Route as SubjectsRouteImport } from './routes/subjects'
 import { Route as TeacherPortalRouteImport } from './routes/teacher-portal'
 import { Route as TransportRouteImport } from './routes/transport'
 
@@ -132,6 +133,11 @@ const StudentsRoute = StudentsRouteImport.update({
   path: '/students',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SubjectsRoute = SubjectsRouteImport.update({
+  id: '/subjects',
+  path: '/subjects',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TeacherPortalRoute = TeacherPortalRouteImport.update({
   id: '/teacher-portal',
   path: '/teacher-portal',
@@ -164,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/sms': typeof SmsRoute
   '/student-portal': typeof StudentPortalRoute
   '/students': typeof StudentsRoute
+  '/subjects': typeof SubjectsRoute
   '/teacher-portal': typeof TeacherPortalRoute
   '/transport': typeof TransportRoute
 }
@@ -188,6 +195,7 @@ export interface FileRoutesByTo {
   '/sms': typeof SmsRoute
   '/student-portal': typeof StudentPortalRoute
   '/students': typeof StudentsRoute
+  '/subjects': typeof SubjectsRoute
   '/teacher-portal': typeof TeacherPortalRoute
   '/transport': typeof TransportRoute
 }
@@ -213,6 +221,7 @@ export interface FileRoutesById {
   '/sms': typeof SmsRoute
   '/student-portal': typeof StudentPortalRoute
   '/students': typeof StudentsRoute
+  '/subjects': typeof SubjectsRoute
   '/teacher-portal': typeof TeacherPortalRoute
   '/transport': typeof TransportRoute
 }
@@ -239,6 +248,7 @@ export interface FileRouteTypes {
     | '/sms'
     | '/student-portal'
     | '/students'
+    | '/subjects'
     | '/teacher-portal'
     | '/transport'
   fileRoutesByTo: FileRoutesByTo
@@ -263,6 +273,7 @@ export interface FileRouteTypes {
     | '/sms'
     | '/student-portal'
     | '/students'
+    | '/subjects'
     | '/teacher-portal'
     | '/transport'
   id:
@@ -287,6 +298,7 @@ export interface FileRouteTypes {
     | '/sms'
     | '/student-portal'
     | '/students'
+    | '/subjects'
     | '/teacher-portal'
     | '/transport'
   fileRoutesById: FileRoutesById
@@ -312,6 +324,7 @@ export interface RootRouteChildren {
   SmsRoute: typeof SmsRoute
   StudentPortalRoute: typeof StudentPortalRoute
   StudentsRoute: typeof StudentsRoute
+  SubjectsRoute: typeof SubjectsRoute
   TeacherPortalRoute: typeof TeacherPortalRoute
   TransportRoute: typeof TransportRoute
 }
@@ -458,6 +471,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/subjects': {
+      id: '/subjects'
+      path: '/subjects'
+      fullPath: '/subjects'
+      preLoaderRoute: typeof SubjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/teacher-portal': {
       id: '/teacher-portal'
       path: '/teacher-portal'
@@ -496,6 +516,7 @@ const rootRouteChildren: RootRouteChildren = {
   SmsRoute: SmsRoute,
   StudentPortalRoute: StudentPortalRoute,
   StudentsRoute: StudentsRoute,
+  SubjectsRoute: SubjectsRoute,
   TeacherPortalRoute: TeacherPortalRoute,
   TransportRoute: TransportRoute,
 }

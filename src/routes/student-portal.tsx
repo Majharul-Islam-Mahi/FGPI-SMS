@@ -1,19 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
-import { useStore } from "@/lib/store";
+import { useStore, actions } from "@/lib/store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { User, CalendarCheck, Award, BookOpen, CreditCard, FileText } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { User, CalendarCheck, Award, BookOpen, CreditCard, FileText, FileQuestion } from "lucide-react";
 import { toast } from "sonner";
+import { useState } from "react";
 
 export const Route = createFileRoute("/student-portal")({ component: StudentPortal });
 
 function StudentPortal() {
-  const { session, students, attendance, results, routines, fees } = useStore();
+  const { session, students, attendance, results, routines, fees, applications } = useStore();
   const me = students.find(s => s.id === session?.studentId);
+
+  const [type, setType] = useState("Sick Leave");
+  const [reason, setReason] = useState("");
 
   if (!me) return <AppShell title="Student Portal"><p>Please login as a student.</p></AppShell>;
 
@@ -21,10 +27,19 @@ function StudentPortal() {
   const myResults = results.filter(r => r.studentId === me.id);
   const myRoutine = routines.filter(r => r.department === me.department && r.semester === me.semester && r.shift === (me.shift || "Shift 1"));
   const myFees = fees.filter(f => f.studentId === me.id && f.status === "unpaid");
+  const myApps = applications.filter(a => a.studentId === me.id);
 
   const handlePayment = () => {
     toast.success("Redirecting to Online Banking Gateway (Mock)...");
     setTimeout(() => toast.info("Payment Successful! Fee cleared."), 2000);
+  };
+
+  const submitApp = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reason) return toast.error("Please write a reason!");
+    actions.addApplication({ id: crypto.randomUUID(), studentId: me.id, type, reason, status: "pending", date: new Date().toISOString().split("T")[0] });
+    setReason("");
+    toast.success("Application submitted successfully!");
   };
 
   return (
@@ -41,11 +56,12 @@ function StudentPortal() {
 
       <Tabs defaultValue="profile">
         <TabsList className="flex flex-wrap h-auto gap-2 bg-transparent mb-6">
-          <TabsTrigger value="profile"><User className="size-4 mr-2"/> Profile & Documents</TabsTrigger>
+          <TabsTrigger value="profile"><User className="size-4 mr-2"/> Profile</TabsTrigger>
           <TabsTrigger value="attendance"><CalendarCheck className="size-4 mr-2"/> Attendance</TabsTrigger>
-          <TabsTrigger value="results"><Award className="size-4 mr-2"/> Results & Scholarship</TabsTrigger>
-          <TabsTrigger value="routine"><BookOpen className="size-4 mr-2"/> My Routine</TabsTrigger>
+          <TabsTrigger value="results"><Award className="size-4 mr-2"/> Results</TabsTrigger>
+          <TabsTrigger value="routine"><BookOpen className="size-4 mr-2"/> Routine</TabsTrigger>
           <TabsTrigger value="fees"><CreditCard className="size-4 mr-2"/> Exam Fees</TabsTrigger>
+          <TabsTrigger value="applications"><FileQuestion className="size-4 mr-2"/> Applications</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile">
@@ -91,20 +107,23 @@ function StudentPortal() {
 
         <TabsContent value="results">
           <Card>
-            <CardHeader><CardTitle>BTEB Results (Mid, Practical & Final)</CardTitle></CardHeader>
+            <CardHeader><CardTitle>BTEB Results</CardTitle></CardHeader>
             <CardContent>
               <Table>
-                <TableHeader><TableRow><TableHead>Subject</TableHead><TableHead>Mid Term</TableHead><TableHead>Practical</TableHead><TableHead>Final</TableHead><TableHead>Total</TableHead></TableRow></TableHeader>
+                <TableHeader><TableRow><TableHead>Subject</TableHead><TableHead>Mid</TableHead><TableHead>Practical</TableHead><TableHead>Final</TableHead><TableHead>Total</TableHead></TableRow></TableHeader>
                 <TableBody>
-                  {myResults.map(r => (
-                    <TableRow key={r.id}>
-                      <TableCell className="font-medium">{r.subject}</TableCell>
-                      <TableCell>{r.mid_term_marks || "-"}</TableCell>
-                      <TableCell>{r.practical_marks || "-"}</TableCell>
-                      <TableCell>{r.final_marks || "-"}</TableCell>
-                      <TableCell className="font-bold text-primary">{r.marks}</TableCell>
-                    </TableRow>
-                  ))}
+                  {myResults.map(r => {
+                    const fail = r.marks < 40;
+                    return (
+                      <TableRow key={r.id} className={fail ? "bg-red-50/50" : ""}>
+                        <TableCell className="font-medium">{r.subject}</TableCell>
+                        <TableCell>{r.mid_term_marks || "-"}</TableCell>
+                        <TableCell>{r.practical_marks || "-"}</TableCell>
+                        <TableCell>{r.final_marks || "-"}</TableCell>
+                        <TableCell className={fail ? "font-bold text-red-600" : "font-bold text-primary"}>{r.marks}</TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </CardContent>
@@ -144,6 +163,45 @@ function StudentPortal() {
                   ))}
                 </div>
               )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="applications">
+          <Card className="mb-6">
+            <CardHeader><CardTitle>Submit New Application</CardTitle><CardDescription>Apply for leave or certificates.</CardDescription></CardHeader>
+            <CardContent>
+              <form onSubmit={submitApp} className="flex flex-col md:flex-row gap-3">
+                <Select value={type} onValueChange={setType}>
+                  <SelectTrigger className="w-full md:w-48"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Sick Leave">Sick Leave</SelectItem>
+                    <SelectItem value="Personal Leave">Personal Leave</SelectItem>
+                    <SelectItem value="Transcript Request">Transcript Request</SelectItem>
+                    <SelectItem value="Certificate Request">Certificate Request</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input placeholder="Write your reason here..." value={reason} onChange={e => setReason(e.target.value)} className="flex-1" required />
+                <Button type="submit">Submit</Button>
+              </form>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader><CardTitle>My Applications</CardTitle></CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader><TableRow><TableHead>Type</TableHead><TableHead>Reason</TableHead><TableHead>Date</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+                <TableBody>
+                  {myApps.map(a => (
+                    <TableRow key={a.id}>
+                      <TableCell>{a.type}</TableCell>
+                      <TableCell>{a.reason}</TableCell>
+                      <TableCell>{a.date}</TableCell>
+                      <TableCell><Badge variant={a.status === "approved" ? "default" : a.status === "rejected" ? "destructive" : "secondary"}>{a.status}</Badge></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </TabsContent>

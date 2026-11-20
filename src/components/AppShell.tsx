@@ -69,7 +69,7 @@ export function AppShell({ title, roles, children }: { title: string; roles?: Ro
     }
   }, [isLoading, session, navigate]);
 
-  // ⬇️ ডেটা লোড হচ্ছে বা সেশন চেক হচ্ছে — সুন্দর লোডিং স্ক্রিন দেখাবে
+  // ⬇️ ডেটা লোড হওয়ার সময় সুন্দর লোডিং স্ক্রিন দেখাবে
   if (isLoading || !session) {
     return <LoadingScreen message="Loading Dashboard" />;
   }
@@ -117,10 +117,10 @@ export function AppShell({ title, roles, children }: { title: string; roles?: Ro
         <div className="p-3 border-t border-sidebar-border hidden md:block bg-sidebar/50">
           <div className="text-sm font-semibold truncate">{session.name}</div>
           <div className="text-xs opacity-70 capitalize mb-3">{session.role}</div>
+          {/* ⬇️ Logout বাটন এখন গোল্ডেন রঙের */}
           <Button
-            variant="outline"
             size="sm"
-            className="w-full text-sidebar-foreground border-sidebar-border hover:bg-sidebar-accent"
+            className="w-full bg-gold text-black hover:bg-gold/90 font-bold shadow-lg"
             onClick={() => { actions.logout(); navigate({ to: "/login", replace: true }); }}
           >
             <LogOut className="size-4 mr-2" /> Logout

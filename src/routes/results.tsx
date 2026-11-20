@@ -24,16 +24,25 @@ function Results() {
   const current = isStudent ? session?.studentId ?? "" : sid || students[0]?.id || "";
   const st = students.find((s) => s.id === current);
   const rows = results.filter((r) => r.studentId === current);
+  
+  // সেমিস্টারের সব সাবজেক্ট লোড করা
+  const allSubjects = st ? (BTEB_SUBJECTS["2022"][st.department]?.[st.semester] || []) : [];
+  
+  // সাবজেক্টের সাথে মার্কস মিলিয়ে শীট তৈরি
+  const resultSheet = allSubjects.map((sub) => {
+    const result = rows.find((r) => r.subject === sub.name);
+    const marks = result?.marks ?? null;
+    const grade = marks !== null ? gradeFor(marks) : null;
+    return { ...sub, result, marks, grade };
+  });
+
   const gpa = rows.length ? rows.reduce((a, r) => a + gradeFor(r.marks).gp, 0) / rows.length : 0;
 
-  // স্টুডেন্ট সিলেক্ট হলে সাবজেক্ট লিস্ট লোড হবে
-  const availableSubjects = st ? (BTEB_SUBJECTS["2022"][st.department]?.[st.semester] || []) : [];
-
   useEffect(() => {
-    if (availableSubjects.length > 0 && !subject) {
-      setSubject(availableSubjects[0].name);
+    if (allSubjects.length > 0 && !subject) {
+      setSubject(allSubjects[0].name);
     }
-  }, [st?.id, availableSubjects.length]);
+  }, [st?.id, allSubjects.length]);
 
   const add = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,51 +67,77 @@ function Results() {
           <SelectContent>{students.map((s) => <SelectItem key={s.id} value={s.id}>{s.roll} — {s.name}</SelectItem>)}</SelectContent>
         </Select>
       )}
+      
       {st && (
         <div className="rounded-lg bg-card border shadow-card p-5 mb-4 flex flex-wrap justify-between gap-4 card-premium">
           <div>
             <div className="font-display text-xl font-bold">{st.name}</div>
             <div className="text-sm text-muted-foreground">Roll {st.roll} · {st.department} · Sem {st.semester}</div>
           </div>
-          <div className="text-right"><div className="text-sm text-muted-foreground">GPA</div><div className="text-3xl font-display font-bold text-primary">{gpa.toFixed(2)}</div></div>
+          <div className="text-right">
+            <div className="text-sm text-muted-foreground">GPA</div>
+            <div className="text-3xl font-display font-bold text-primary">{gpa.toFixed(2)}</div>
+          </div>
         </div>
       )}
+
       <div className="rounded-lg border bg-card shadow-card card-premium">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Subject</TableHead><TableHead>Mid</TableHead><TableHead>Practical</TableHead>
-              <TableHead>Final</TableHead><TableHead>Total</TableHead><TableHead>Grade</TableHead><TableHead>GP</TableHead>
+              <TableHead>Code</TableHead>
+              <TableHead>Subject</TableHead>
+              <TableHead>Mid</TableHead>
+              <TableHead>Practical</TableHead>
+              <TableHead>Final</TableHead>
+              <TableHead>Total</TableHead>
+              <TableHead>Grade</TableHead>
+              <TableHead>GP</TableHead>
               {!isStudent && <TableHead />}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows.map((r) => {
-              const g = gradeFor(r.marks);
+            {resultSheet.map((row) => {
+              const isFail = row.grade?.grade === "F";
               return (
-                <TableRow key={r.id}>
-                  <TableCell className="font-medium">{r.subject}</TableCell>
-                  <TableCell>{r.mid_term_marks ?? "-"}</TableCell>
-                  <TableCell>{r.practical_marks ?? "-"}</TableCell>
-                  <TableCell>{r.final_marks ?? "-"}</TableCell>
-                  <TableCell className="font-bold">{r.marks}</TableCell>
-                  <TableCell><Badge variant={g.grade === "F" ? "destructive" : "secondary"}>{g.grade}</Badge></TableCell>
-                  <TableCell>{g.gp.toFixed(2)}</TableCell>
-                  {!isStudent && <TableCell className="text-right"><Button size="icon" variant="ghost" onClick={() => actions.deleteResult(r.id)}><Trash2 className="size-4 text-destructive" /></Button></TableCell>}
+                <TableRow key={row.code} className={isFail ? "bg-red-50/50" : ""}>
+                  <TableCell className="font-mono text-xs">{row.code}</TableCell>
+                  <TableCell className="font-medium">{row.name}</TableCell>
+                  <TableCell>{row.result?.mid_term_marks ?? "-"}</TableCell>
+                  <TableCell>{row.result?.practical_marks ?? "-"}</TableCell>
+                  <TableCell>{row.result?.final_marks ?? "-"}</TableCell>
+                  <TableCell className={isFail ? "font-bold text-red-600" : "font-bold"}>{row.marks ?? "-"}</TableCell>
+                  <TableCell>
+                    {row.grade ? (
+                      <Badge variant={isFail ? "destructive" : "secondary"}>{row.grade.grade}</Badge>
+                    ) : "-"}
+                  </TableCell>
+                  <TableCell className={isFail ? "text-red-600 font-semibold" : ""}>
+                    {row.grade?.gp.toFixed(2) ?? "-"}
+                  </TableCell>
+                  {!isStudent && (
+                    <TableCell className="text-right">
+                      {row.result && (
+                        <Button size="icon" variant="ghost" onClick={() => actions.deleteResult(row.result!.id)}>
+                          <Trash2 className="size-4 text-destructive" />
+                        </Button>
+                      )}
+                    </TableCell>
+                  )}
                 </TableRow>
               );
             })}
-            {!rows.length && <TableRow><TableCell colSpan={8} className="text-center py-6 text-muted-foreground">No results found.</TableCell></TableRow>}
           </TableBody>
         </Table>
       </div>
-      {!isStudent && st && availableSubjects.length > 0 && (
+
+      {!isStudent && st && allSubjects.length > 0 && (
         <form onSubmit={add} className="flex flex-wrap gap-3 mt-4 items-end bg-card p-4 rounded-lg border shadow-sm">
           <div>
             <label className="text-xs text-muted-foreground block mb-1">Subject</label>
             <Select value={subject} onValueChange={setSubject}>
               <SelectTrigger className="w-72"><SelectValue /></SelectTrigger>
-              <SelectContent>{availableSubjects.map(s => <SelectItem key={s.code} value={s.name}>{s.code} - {s.name}</SelectItem>)}</SelectContent>
+              <SelectContent>{allSubjects.map(s => <SelectItem key={s.code} value={s.name}>{s.code} - {s.name}</SelectItem>)}</SelectContent>
             </Select>
           </div>
           <div><label className="text-xs text-muted-foreground block mb-1">Mid Term</label><Input type="number" value={midMarks} onChange={e => setMidMarks(e.target.value)} className="w-24" placeholder="20" /></div>

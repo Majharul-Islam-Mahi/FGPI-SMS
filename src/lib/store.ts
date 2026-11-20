@@ -167,7 +167,7 @@ export interface Session { role: Role; name: string; studentId?: string; }
 
 export interface AdmissionRecord { id: string; name: string; email: string; gpa: string; status: string; }
 export interface FacultyRecord { id: string; teacherId?: string; name: string; department: string; course: string; designation?: string; }
-export interface HostelRecord { id: string; roomNo: string; status: string; seatCount?: number; bookedSeats?: number; }
+export interface HostelRecord { id: string; roomNo: string; status: string; seatCount?: number; bookedSeats?: number; building?: string; }
 export interface LibraryRecord { id: string; title: string; author: string; status: string; fine?: number; }
 export interface TransportRecord { id: string; routeName: string; busNo: string; departureTime?: string; location?: string; }
 export interface SmsRecord { id: string; target: string; message: string; date: string; }
@@ -233,7 +233,7 @@ async function load() {
     if (applications) state.applications = applications.map((a: any) => ({ ...a, studentId: a.student_id }));
     if (admissions) state.admissions = admissions as any;
     if (faculties) state.faculties = faculties.map((f: any) => ({ ...f, teacherId: f.teacher_id, designation: f.designation }));
-    if (hostels) state.hostels = hostels.map((h: any) => ({ ...h, roomNo: h.room_no, seatCount: h.seat_count, bookedSeats: h.booked_seats }));
+    if (hostels) state.hostels = hostels.map((h: any) => ({ ...h, roomNo: h.room_no, seatCount: h.seat_count, bookedSeats: h.booked_seats, building: h.building }));
     if (libraries) state.libraries = libraries as any;
     if (transports) state.transports = transports.map((t: any) => ({ ...t, routeName: t.route_name, busNo: t.bus_no, departureTime: t.departure_time, location: t.location }));
     if (smsAlerts) state.smsAlerts = smsAlerts as any;
@@ -261,14 +261,25 @@ export function useStore(): State {
 
 export const actions = {
   login(role: Role, username: string, password: string): Session | null {
+    // ⬇️ ট্রেইলিং স্পেস দিলেও কাজ করবে
+    const u = username.trim();
+    const p = password.trim();
     let session: Session | null = null;
-    if (role === "admin" && username === "admin" && password === "admin123") session = { role, name: "Administrator" };
-    if (role === "teacher" && username === "teacher" && password === "teacher123") session = { role, name: "Teacher" };
+    
+    if (role === "admin" && u === "admin" && p === "admin123") 
+      session = { role, name: "Administrator" };
+    if (role === "teacher" && u === "teacher" && p === "teacher123") 
+      session = { role, name: "Teacher" };
     if (role === "student") {
-      const st = state.students.find((s) => s.roll === username.trim());
-      if (st && password === "1234") session = { role, name: st.name, studentId: st.id };
+      const st = state.students.find((s) => s.roll === u);
+      if (st && p === "1234") 
+        session = { role, name: st.name, studentId: st.id };
     }
-    if (session) { set((s) => ({ ...s, session })); localStorage.setItem("fgpi-session", JSON.stringify(session)); }
+    
+    if (session) { 
+      set((s) => ({ ...s, session })); 
+      localStorage.setItem("fgpi-session", JSON.stringify(session)); 
+    }
     return session;
   },
   logout: () => { set((s) => ({ ...s, session: null })); localStorage.removeItem("fgpi-session"); },
@@ -295,7 +306,7 @@ export const actions = {
     set((s) => ({ ...s, faculties: s.faculties.filter((f) => f.id !== id) }));
     await supabase.from("faculties").delete().eq("id", id);
   },
-  async addHostel(h: HostelRecord) { set((s) => ({ ...s, hostels: [...s.hostels, h] })); await supabase.from("hostels").insert({ id: h.id, room_no: h.roomNo, status: h.status, seat_count: h.seatCount, booked_seats: h.bookedSeats }); },
+  async addHostel(h: HostelRecord) { set((s) => ({ ...s, hostels: [...s.hostels, h] })); await supabase.from("hostels").insert({ id: h.id, room_no: h.roomNo, status: h.status, seat_count: h.seatCount, booked_seats: h.bookedSeats, building: h.building }); },
   async bookHostelSeat(id: string) {
     set((s) => ({ ...s, hostels: s.hostels.map(h => {
       if (h.id === id && (h.bookedSeats || 0) < (h.seatCount || 4)) {
