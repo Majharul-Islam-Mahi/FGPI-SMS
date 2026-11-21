@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   GraduationCap, LayoutDashboard, Users, CalendarCheck, Award, Building2, Presentation, 
   LogOut, FileText, CreditCard, CalendarDays, FileQuestion, UserPlus, Briefcase, Hotel, 
@@ -66,8 +66,24 @@ const NAV_GROUPS = [
   },
 ] as const;
 
+// গোল প্রোফাইল ছবি; ছবি না থাকলে বা লোড না হলে নামের প্রথম অক্ষর দেখায়
+function UserAvatar({ url, name }: { url?: string; name: string }) {
+  const [failed, setFailed] = useState(false);
+  const initial = Array.from(name.trim())[0] ?? "?";
+
+  return (
+    <div className="size-10 rounded-full overflow-hidden border-2 border-gold/50 shrink-0 bg-primary/20 flex items-center justify-center">
+      {url && !failed ? (
+        <img src={url} alt={name} className="size-full object-cover" onError={() => setFailed(true)} />
+      ) : (
+        <span className="text-gold font-bold uppercase">{initial}</span>
+      )}
+    </div>
+  );
+}
+
 export function AppShell({ title, roles, children }: { title: string; roles?: Role[]; children: ReactNode }) {
-  const { session, isLoading } = useStore();
+  const { session, isLoading, admins, teachers, students } = useStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -83,6 +99,15 @@ export function AppShell({ title, roles, children }: { title: string; roles?: Ro
   if (isLoading || !session) return <LoadingScreen message="Loading System" />;
   
   const allowed = !roles || roles.includes(session.role);
+
+  // বর্তমান ব্যবহারকারীর রেকর্ড থেকে প্রোফাইল ছবির URL
+  const currentUser =
+    session.role === "admin"
+      ? admins.find((a) => a.id === (session.adminId ?? session.userId))
+      : session.role === "teacher"
+        ? teachers.find((t) => t.id === (session.teacherId ?? session.userId))
+        : students.find((s) => s.id === (session.studentId ?? session.userId));
+  const avatarUrl = currentUser?.avatarUrl;
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
@@ -115,8 +140,16 @@ export function AppShell({ title, roles, children }: { title: string; roles?: Ro
           })}
         </nav>
         <div className="p-3 border-t border-sidebar-border hidden md:block bg-sidebar/50">
-          <div className="text-sm font-semibold truncate">{session.name}</div>
-          <div className="text-xs opacity-70 capitalize mb-3">{session.role} {session.status !== "Active" && `(${session.status})`}</div>
+          <div className="flex items-center gap-3 mb-3">
+            <UserAvatar key={avatarUrl ?? "none"} url={avatarUrl} name={session.name} />
+            <div className="min-w-0 flex-1">
+              <div className="text-sm font-semibold truncate">{session.name}</div>
+              <div className="text-xs opacity-70 capitalize truncate">
+                {session.role}
+                {session.status && session.status !== "Active" ? ` (${session.status})` : ""}
+              </div>
+            </div>
+          </div>
           <Button size="sm" className="w-full bg-gold text-black hover:bg-gold/90 font-bold shadow-lg" onClick={() => { actions.logout(); navigate({ to: "/login", replace: true }); }}>
             <LogOut className="size-4 mr-2" /> Logout
           </Button>

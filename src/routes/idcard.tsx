@@ -61,8 +61,8 @@ function IdCardPage() {
             {/* Card Header */}
             <div className="bg-gradient-to-r from-gold to-yellow-500 p-4 flex justify-between items-center">
               <div>
-                <h2 className="font-bold text-black text-lg leading-tight font-display">FGPI SMS</h2>
-                <p className="text-xs text-black/70 font-semibold tracking-wider">Feni Govt Polytechnic Institute</p>
+                <h2 className="font-bold text-black text-lg leading-tight font-display">Feni Govt Polytechnic InstituteFGPI SMS</h2>
+                <p className="text-xs text-black/70 font-semibold tracking-wider">FGPI SMS</p>
               </div>
               <div className="bg-black/20 p-2 rounded-full">
                 <IdCard className="size-6 text-black" />
