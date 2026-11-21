@@ -8,151 +8,131 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Hotel, BedDouble, Users, Building } from "lucide-react";
+import { Hotel, BedDouble, Users, Building, UserCheck } from "lucide-react";
 
 export const Route = createFileRoute("/hostel")({ component: Hostel });
 
 const BUILDINGS = ["Boys Hostel", "Girls Hostel"];
 
 function Hostel() {
-  const { hostels } = useStore();
+  const { hostels, students, hostelAllocations } = useStore();
   const [building, setBuilding] = useState(BUILDINGS[0]);
   const [roomStart, setRoomStart] = useState("");
   const [roomEnd, setRoomEnd] = useState("");
-  const [seatCount, setSeatCount] = useState("4");
+  const [monthlyFee, setMonthlyFee] = useState("1500");
+  const [allocStudentId, setAllocStudentId] = useState("");
+  const [allocRoomId, setAllocRoomId] = useState("");
 
-  const submit = (e: React.FormEvent) => {
+  const submitRooms = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!roomStart || !roomEnd) return toast.error("Room start & end required");
     const start = Number(roomStart);
     const end = Number(roomEnd);
-    if (start > end) return toast.error("Start must be less than End");
-    
+    if (!start || !end || start > end) return toast.error("Invalid range");
     for (let i = start; i <= end; i++) {
-      actions.addHostel({ 
-        id: crypto.randomUUID(), 
-        roomNo: String(i), 
-        status: "Available",
-        seatCount: Number(seatCount),
-        bookedSeats: 0,
-        building
-      } as any);
+      actions.addHostelRoom({ id: crypto.randomUUID(), roomNo: String(i), building, status: "Available", seatCount: 4, bookedSeats: 0, monthlyFee: Number(monthlyFee) });
     }
     setRoomStart(""); setRoomEnd("");
-    toast.success(`${end - start + 1} rooms added to ${building}!`);
+    toast.success(`${end - start + 1} rooms added to ${building}`);
   };
 
-  const boysRooms = hostels.filter((h: any) => (h.building || "Boys Hostel") === "Boys Hostel");
-  const girlsRooms = hostels.filter((h: any) => h.building === "Girls Hostel");
-
-  const Stats = ({ rooms, label }: { rooms: any[]; label: string }) => {
-    const available = rooms.filter(r => r.status === "Available").length;
-    const full = rooms.filter(r => r.status === "Full").length;
-    return (
-      <Card className="border-l-4 border-l-primary">
-        <CardContent className="p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Building className="size-5 text-primary" />
-              <h3 className="font-bold text-lg">{label}</h3>
-            </div>
-            <Badge variant="outline">{rooms.length} Rooms</Badge>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="bg-green-50 rounded p-2 text-center">
-              <div className="text-xl font-bold text-green-600">{available}</div>
-              <div className="text-xs text-green-700">Available</div>
-            </div>
-            <div className="bg-red-50 rounded p-2 text-center">
-              <div className="text-xl font-bold text-red-600">{full}</div>
-              <div className="text-xs text-red-700">Full</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
+  const submitAllocation = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!allocStudentId || !allocRoomId) return toast.error("Select student and room");
+    actions.allocateHostel({
+      id: crypto.randomUUID(), studentId: allocStudentId, roomId: allocRoomId,
+      allocateDate: new Date().toISOString().split("T")[0],
+      monthlyFee: Number(monthlyFee), paidAmount: 0, status: "active"
+    });
+    setAllocStudentId(""); setAllocRoomId("");
+    toast.success("Student allocated to hostel");
   };
+
+  const availableRooms = hostels.filter((h) => h.status === "Available");
+  const nonAllocatedStudents = students.filter((s) => !s.isHostelStudent);
+
+  const boysRooms = hostels.filter((h) => h.building === "Boys Hostel");
+  const girlsRooms = hostels.filter((h) => h.building === "Girls Hostel");
 
   return (
-    <AppShell title="Hostel · হোস্টেল">
-      {/* Building Overview */}
+    <AppShell title="Hostel · হোস্টেল" roles={["admin", "teacher"]}>
+      {/* Stats */}
       <div className="grid md:grid-cols-2 gap-4 mb-6">
-        <Stats rooms={boysRooms} label="Boys Hostel" />
-        <Stats rooms={girlsRooms} label="Girls Hostel" />
+        <Card className="border-l-4 border-l-primary">
+          <CardContent className="p-5">
+            <div className="flex justify-between mb-2"><h3 className="font-bold flex items-center gap-2"><Building className="size-5 text-primary" /> Boys Hostel</h3><Badge>{boysRooms.length} Rooms</Badge></div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-green-50 rounded p-2 text-center"><div className="text-xl font-bold text-green-600">{boysRooms.filter((r) => r.status === "Available").length}</div><div className="text-xs">Available</div></div>
+              <div className="bg-red-50 rounded p-2 text-center"><div className="text-xl font-bold text-red-600">{boysRooms.filter((r) => r.status === "Full").length}</div><div className="text-xs">Full</div></div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-l-4 border-l-primary">
+          <CardContent className="p-5">
+            <div className="flex justify-between mb-2"><h3 className="font-bold flex items-center gap-2"><Building className="size-5 text-primary" /> Girls Hostel</h3><Badge>{girlsRooms.length} Rooms</Badge></div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="bg-green-50 rounded p-2 text-center"><div className="text-xl font-bold text-green-600">{girlsRooms.filter((r) => r.status === "Available").length}</div><div className="text-xs">Available</div></div>
+              <div className="bg-red-50 rounded p-2 text-center"><div className="text-xl font-bold text-red-600">{girlsRooms.filter((r) => r.status === "Full").length}</div><div className="text-xs">Full</div></div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Add Rooms Form */}
+      {/* Add Rooms */}
       <Card className="mb-6 shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Hotel className="size-5 text-primary" /> Add Rooms (Bulk)
-          </CardTitle>
-          <CardDescription>Add multiple rooms at once by specifying start & end room numbers.</CardDescription>
-        </CardHeader>
+        <CardHeader><CardTitle className="flex items-center gap-2"><Hotel className="size-5 text-primary" /> Add Rooms (Bulk)</CardTitle><CardDescription>Add multiple rooms at once.</CardDescription></CardHeader>
         <CardContent>
-          <form onSubmit={submit} className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <Select value={building} onValueChange={setBuilding}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>{BUILDINGS.map(b => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent>
-            </Select>
-            <Input placeholder="Start Room (101)" value={roomStart} onChange={e => setRoomStart(e.target.value)} required />
-            <Input placeholder="End Room (120)" value={roomEnd} onChange={e => setRoomEnd(e.target.value)} required />
-            <Input type="number" placeholder="Seats/Room" value={seatCount} onChange={e => setSeatCount(e.target.value)} required />
+          <form onSubmit={submitRooms} className="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <Select value={building} onValueChange={setBuilding}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{BUILDINGS.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent></Select>
+            <Input placeholder="Start (101)" value={roomStart} onChange={(e) => setRoomStart(e.target.value)} required />
+            <Input placeholder="End (120)" value={roomEnd} onChange={(e) => setRoomEnd(e.target.value)} required />
+            <Input type="number" placeholder="Monthly Fee" value={monthlyFee} onChange={(e) => setMonthlyFee(e.target.value)} required />
             <Button type="submit">Add Range</Button>
           </form>
         </CardContent>
       </Card>
 
-      {/* Boys Hostel Rooms */}
-      {boysRooms.length > 0 && (
-        <div className="mb-8">
-          <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-            <Building className="size-5 text-primary" /> Boys Hostel — Rooms
-          </h3>
-          <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 gap-2">
-            {boysRooms.sort((a: any, b: any) => Number(a.roomNo) - Number(b.roomNo)).map((h: any) => (
-              <Card key={h.id} className={`text-center shadow-sm ${h.status === "Available" ? "border-green-500/30" : "border-red-500/30"}`}>
-                <CardContent className="p-3">
-                  <BedDouble className={`size-6 mx-auto mb-1 ${h.status === "Available" ? "text-green-600" : "text-red-500"}`} />
-                  <div className="font-bold text-sm">{h.roomNo}</div>
-                  <div className="flex items-center justify-center gap-1 mt-1">
-                    <span className={`w-2 h-2 rounded-full ${h.status === "Available" ? "bg-green-500" : "bg-red-500"}`} />
-                    <span className="text-xs">{h.bookedSeats || 0}/{h.seatCount || 4}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Allocate Student */}
+      <Card className="mb-6 shadow-sm">
+        <CardHeader><CardTitle className="flex items-center gap-2"><UserCheck className="size-5 text-primary" /> Allocate Student to Room</CardTitle><CardDescription>Assign a student to an available room.</CardDescription></CardHeader>
+        <CardContent>
+          <form onSubmit={submitAllocation} className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <Select value={allocStudentId} onValueChange={setAllocStudentId}><SelectTrigger><SelectValue placeholder="Select Student" /></SelectTrigger><SelectContent>{nonAllocatedStudents.map((s) => <SelectItem key={s.id} value={s.id}>{s.roll} - {s.name}</SelectItem>)}</SelectContent></Select>
+            <Select value={allocRoomId} onValueChange={setAllocRoomId}><SelectTrigger><SelectValue placeholder="Select Room" /></SelectTrigger><SelectContent>{availableRooms.map((r) => <SelectItem key={r.id} value={r.id}>{r.building} - Room {r.roomNo} ({r.seatCount - r.bookedSeats} seats free)</SelectItem>)}</SelectContent></Select>
+            <Button type="submit">Allocate</Button>
+          </form>
+        </CardContent>
+      </Card>
 
-      {/* Girls Hostel Rooms */}
-      {girlsRooms.length > 0 && (
-        <div>
-          <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-            <Building className="size-5 text-primary" /> Girls Hostel — Rooms
-          </h3>
-          <div className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 gap-2">
-            {girlsRooms.sort((a: any, b: any) => Number(a.roomNo) - Number(b.roomNo)).map((h: any) => (
-              <Card key={h.id} className={`text-center shadow-sm ${h.status === "Available" ? "border-green-500/30" : "border-red-500/30"}`}>
-                <CardContent className="p-3">
-                  <BedDouble className={`size-6 mx-auto mb-1 ${h.status === "Available" ? "text-green-600" : "text-red-500"}`} />
-                  <div className="font-bold text-sm">{h.roomNo}</div>
-                  <div className="flex items-center justify-center gap-1 mt-1">
-                    <span className={`w-2 h-2 rounded-full ${h.status === "Available" ? "bg-green-500" : "bg-red-500"}`} />
-                    <span className="text-xs">{h.bookedSeats || 0}/{h.seatCount || 4}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {hostels.length === 0 && (
-        <EmptyState icon={Hotel} title="No Rooms Registered" description="Start by adding rooms using the form above." />
-      )}
+      {/* Allocations List */}
+      <Card className="shadow-sm">
+        <CardHeader><CardTitle>Current Allocations ({hostelAllocations.length})</CardTitle></CardHeader>
+        <CardContent>
+          {hostelAllocations.length === 0 ? <EmptyState icon={Users} title="No Allocations Yet" description="No students have been allocated to hostels." /> : (
+            <Table>
+              <TableHeader><TableRow><TableHead>Student</TableHead><TableHead>Room</TableHead><TableHead>Monthly Fee</TableHead><TableHead>Allocated</TableHead><TableHead className="text-right">Action</TableHead></TableRow></TableHeader>
+              <TableBody>
+                {hostelAllocations.map((a) => {
+                  const st = students.find((s) => s.id === a.studentId);
+                  const rm = hostels.find((h) => h.id === a.roomId);
+                  return (
+                    <TableRow key={a.id}>
+                      <TableCell>{st?.name} ({st?.roll})</TableCell>
+                      <TableCell>{rm?.building} - {rm?.roomNo}</TableCell>
+                      <TableCell>BDT {a.monthlyFee}</TableCell>
+                      <TableCell>{a.allocateDate}</TableCell>
+                      <TableCell className="text-right">
+                        <Button size="sm" variant="destructive" onClick={() => actions.vacateHostel(a.id, a.roomId, a.studentId)}>Vacate</Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
     </AppShell>
   );
 }

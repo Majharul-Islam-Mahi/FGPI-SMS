@@ -3,7 +3,7 @@ import { useEffect, type ReactNode } from "react";
 import {
   GraduationCap, LayoutDashboard, Users, CalendarCheck, Award, Building2, Presentation, 
   LogOut, FileText, CreditCard, CalendarDays, FileQuestion, UserPlus, Briefcase, Hotel, 
-  Book, Bus, MessageSquare, IdCard, Wallet, BookOpen, Settings, User
+  Book, Bus, MessageSquare, IdCard, Wallet, BookOpen, Settings, User, ShieldAlert
 } from "lucide-react";
 import { actions, useStore, type Role } from "@/lib/store";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,7 @@ const NAV_GROUPS = [
       { to: "/applications", label: "Applications", icon: FileQuestion, roles: ["admin", "teacher", "student"] },
       { to: "/fee-ledger", label: "Fee Ledger", icon: Wallet, roles: ["admin"] },
       { to: "/sms", label: "SMS Alerts", icon: MessageSquare, roles: ["admin", "teacher"] },
+      { to: "/teacher-register", label: "Teacher Register", icon: UserPlus, roles: ["admin"] },
     ],
   },
   {
@@ -70,10 +71,17 @@ export function AppShell({ title, roles, children }: { title: string; roles?: Ro
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoading && !session) navigate({ to: "/login", replace: true });
-  }, [isLoading, session, navigate]);
+    if (!isLoading) {
+      if (!session) {
+        navigate({ to: "/login", replace: true });
+      } else if (roles && !roles.includes(session.role)) {
+        navigate({ to: "/dashboard", replace: true });
+      }
+    }
+  }, [isLoading, session, roles, navigate]);
 
-  if (isLoading || !session) return <LoadingScreen message="Loading Portal" />;
+  if (isLoading || !session) return <LoadingScreen message="Loading System" />;
+  
   const allowed = !roles || roles.includes(session.role);
 
   return (
@@ -108,17 +116,28 @@ export function AppShell({ title, roles, children }: { title: string; roles?: Ro
         </nav>
         <div className="p-3 border-t border-sidebar-border hidden md:block bg-sidebar/50">
           <div className="text-sm font-semibold truncate">{session.name}</div>
-          <div className="text-xs opacity-70 capitalize mb-3">{session.role}</div>
+          <div className="text-xs opacity-70 capitalize mb-3">{session.role} {session.status !== "Active" && `(${session.status})`}</div>
           <Button size="sm" className="w-full bg-gold text-black hover:bg-gold/90 font-bold shadow-lg" onClick={() => { actions.logout(); navigate({ to: "/login", replace: true }); }}>
             <LogOut className="size-4 mr-2" /> Logout
           </Button>
         </div>
       </aside>
-      <main className="flex-1 p-4 md:p-8 max-w-7xl">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground">{title}</h1>
+
+      <main className="flex-1 flex flex-col min-w-0">
+        {/* ⬇️ Read-Only Alert Banner */}
+        {session.isReadOnly && (
+          <div className="bg-amber-500 text-black px-4 py-2 text-sm font-semibold flex items-center justify-center gap-2 shadow-md">
+            <ShieldAlert className="size-4" /> 
+            You are in Read-Only Mode. Your account status is "{session.status}". You cannot add, edit, or delete any data.
+          </div>
+        )}
+        
+        <div className="p-4 md:p-8 max-w-7xl w-full flex-1">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">{title}</h1>
+          </div>
+          {allowed ? children : <p className="text-muted-foreground">Access restricted for your role.</p>}
         </div>
-        {allowed ? children : <p className="text-muted-foreground">Access restricted for your role.</p>}
       </main>
     </div>
   );

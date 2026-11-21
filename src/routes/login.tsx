@@ -2,66 +2,41 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { GraduationCap } from "lucide-react";
 import { toast } from "sonner";
-import { actions, type Role } from "@/lib/store";
+import { actions, DEPARTMENTS, SESSIONS, type Role } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export const Route = createFileRoute("/login")({
-  head: () => ({
-    meta: [
-      { title: "Login — FGPI Student Management System" },
-      {
-        name: "description",
-        content: "Admin, teacher and student login for the FGPI Student Management System.",
-      },
-      { property: "og:title", content: "Login — FGPI SMS" },
-      { property: "og:description", content: "লগইন করুন — Admin, Teacher, Student" },
-    ],
-  }),
-  component: Login,
-});
-
-const HINTS: Record<Role, string> = {
-  admin: "Demo: admin / admin123",
-  teacher: "Demo: teacher / teacher123",
-  student: "Demo: Roll 510100 / 1234",
-};
+export const Route = createFileRoute("/login")({ component: Login });
 
 function Login() {
   const [role, setRole] = useState<Role>("admin");
-  const [u, setU] = useState("");
-  const [p, setP] = useState("");
+  const [password, setPassword] = useState("");
+  const [adminCode, setAdminCode] = useState("");
+  const [teacherDept, setTeacherDept] = useState("CST");
+  const [teacherId, setTeacherId] = useState("");
+  const [studentDept, setStudentDept] = useState("CST");
+  const [studentRoll, setStudentRoll] = useState("");
+  const [studentSession, setStudentSession] = useState("2023-24");
   const navigate = useNavigate();
 
-  const submit = async (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    let s;
-    try {
-      s = await actions.login(role, u, p);
-    } catch {
-      toast.error("Could not reach the student records. Please try again.");
-      return;
-    }
-    if (!s) {
-      toast.error("ভুল তথ্য — invalid username or password");
-      return;
-    }
+    let s = null;
+    if (role === "admin") s = actions.loginAdmin(adminCode, password);
+    if (role === "teacher") s = actions.loginTeacher(teacherDept, teacherId, password);
+    if (role === "student") s = actions.loginStudent(studentDept, studentRoll, studentSession, password);
+    if (!s) return toast.error("ভুল তথ্য — invalid credentials");
     toast.success(`Welcome, ${s.name}`);
     navigate({ to: "/dashboard" });
   };
 
   return (
     <div className="min-h-screen grid place-items-center bg-hero p-4">
-      <form
-        onSubmit={submit}
-        className="w-full max-w-md rounded-xl bg-card p-8 shadow-card space-y-5"
-      >
-        <Link
-          to="/"
-          className="flex items-center gap-2 text-primary font-display font-bold text-xl"
-        >
+      <form onSubmit={submit} className="w-full max-w-md rounded-xl bg-card p-8 shadow-card space-y-4">
+        <Link to="/" className="flex items-center gap-2 text-primary font-display font-bold text-xl">
           <GraduationCap className="size-7" /> FGPI SMS
         </Link>
         <div>
@@ -75,18 +50,62 @@ function Login() {
             <TabsTrigger value="student">Student</TabsTrigger>
           </TabsList>
         </Tabs>
-        <div className="space-y-2">
-          <Label htmlFor="u">{role === "student" ? "Roll number · রোল" : "Username"}</Label>
-          <Input id="u" value={u} onChange={(e) => setU(e.target.value)} required />
+
+        {role === "admin" && (
+          <div className="space-y-1">
+            <Label>Admin Code</Label>
+            <Input placeholder="ADMIN-001" value={adminCode} onChange={(e) => setAdminCode(e.target.value)} required />
+            <p className="text-xs text-muted-foreground">Try: ADMIN-001 / admin123</p>
+          </div>
+        )}
+
+        {role === "teacher" && (
+          <>
+            <div className="space-y-1">
+              <Label>Department</Label>
+              <Select value={teacherDept} onValueChange={setTeacherDept}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>{DEPARTMENTS.map((d) => <SelectItem key={d.code} value={d.code}>{d.code} - {d.name}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label>Teacher ID</Label>
+              <Input placeholder="T-CST-001" value={teacherId} onChange={(e) => setTeacherId(e.target.value)} required />
+            </div>
+          </>
+        )}
+
+        {role === "student" && (
+          <>
+            <div className="space-y-1">
+              <Label>Department</Label>
+              <Select value={studentDept} onValueChange={setStudentDept}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>{DEPARTMENTS.map((d) => <SelectItem key={d.code} value={d.code}>{d.code}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <Label>Roll</Label>
+                <Input placeholder="510100" value={studentRoll} onChange={(e) => setStudentRoll(e.target.value)} required />
+              </div>
+              <div className="space-y-1">
+                <Label>Session</Label>
+                <Select value={studentSession} onValueChange={setStudentSession}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>{SESSIONS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="space-y-1">
+          <Label>Password</Label>
+          <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="p">Password · পাসওয়ার্ড</Label>
-          <Input id="p" type="password" value={p} onChange={(e) => setP(e.target.value)} required />
-        </div>
-        <Button type="submit" className="w-full">
-          Login
-        </Button>
-        <p className="text-xs text-muted-foreground text-center">{HINTS[role]}</p>
+
+        <Button type="submit" className="w-full">Login</Button>
       </form>
     </div>
   );

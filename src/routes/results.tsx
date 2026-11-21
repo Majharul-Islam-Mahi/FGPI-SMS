@@ -25,10 +25,8 @@ function Results() {
   const st = students.find((s) => s.id === current);
   const rows = results.filter((r) => r.studentId === current);
   
-  // সেমিস্টারের সব সাবজেক্ট লোড করা
   const allSubjects = st ? (BTEB_SUBJECTS["2022"][st.department]?.[st.semester] || []) : [];
   
-  // সাবজেক্টের সাথে মার্কস মিলিয়ে শীট তৈরি
   const resultSheet = allSubjects.map((sub) => {
     const result = rows.find((r) => r.subject === sub.name);
     const marks = result?.marks ?? null;
@@ -39,9 +37,7 @@ function Results() {
   const gpa = rows.length ? rows.reduce((a, r) => a + gradeFor(r.marks).gp, 0) / rows.length : 0;
 
   useEffect(() => {
-    if (allSubjects.length > 0 && !subject) {
-      setSubject(allSubjects[0].name);
-    }
+    if (allSubjects.length > 0 && !subject) setSubject(allSubjects[0].name);
   }, [st?.id, allSubjects.length]);
 
   const add = (e: React.FormEvent) => {
@@ -50,11 +46,12 @@ function Results() {
     const prac = Number(practicalMarks) || 0;
     const fin = Number(finalMarks) || 0;
     const total = mid + prac + fin;
-    if (!st || !subject || total < 0 || total > 100) return toast.error("Invalid marks");
-    actions.addResult({ 
-      id: `r${Date.now()}`, studentId: st.id, subject, semester: st.semester, marks: total,
-      mid_term_marks: mid, practical_marks: prac, final_marks: fin 
-    });
+    
+    if (!st || !subject) return toast.error("Student and Subject required");
+    if (total < 0 || total > 100) return toast.error("Total marks must be between 0 and 100");
+    if (mid > 30 || prac > 25 || fin > 50) return toast.error("Marks exceed maximum limit for a section");
+    
+    actions.addResult({ id: `r${Date.now()}`, studentId: st.id, subject, semester: st.semester, marks: total, midTermMarks: mid, practicalMarks: prac, finalMarks: fin });
     setMidMarks(""); setPracticalMarks(""); setFinalMarks("");
     toast.success("Result added");
   };
@@ -85,15 +82,10 @@ function Results() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Code</TableHead>
-              <TableHead>Subject</TableHead>
-              <TableHead>Mid</TableHead>
-              <TableHead>Practical</TableHead>
-              <TableHead>Final</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Grade</TableHead>
-              <TableHead>GP</TableHead>
-              {!isStudent && <TableHead />}
+              <TableHead>Code</TableHead><TableHead>Subject</TableHead><TableHead>Mid</TableHead>
+              <TableHead>Practical</TableHead><TableHead>Final</TableHead><TableHead>Total</TableHead>
+              <TableHead>Grade</TableHead><TableHead>GP</TableHead>
+              {!isStudent && !session?.isReadOnly && <TableHead />}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -103,24 +95,20 @@ function Results() {
                 <TableRow key={row.code} className={isFail ? "bg-red-50/50" : ""}>
                   <TableCell className="font-mono text-xs">{row.code}</TableCell>
                   <TableCell className="font-medium">{row.name}</TableCell>
-                  <TableCell>{row.result?.mid_term_marks ?? "-"}</TableCell>
-                  <TableCell>{row.result?.practical_marks ?? "-"}</TableCell>
-                  <TableCell>{row.result?.final_marks ?? "-"}</TableCell>
+                  <TableCell>{row.result?.midTermMarks ?? "-"}</TableCell>
+                  <TableCell>{row.result?.practicalMarks ?? "-"}</TableCell>
+                  <TableCell>{row.result?.finalMarks ?? "-"}</TableCell>
                   <TableCell className={isFail ? "font-bold text-red-600" : "font-bold"}>{row.marks ?? "-"}</TableCell>
                   <TableCell>
                     {row.grade ? (
                       <Badge variant={isFail ? "destructive" : "secondary"}>{row.grade.grade}</Badge>
                     ) : "-"}
                   </TableCell>
-                  <TableCell className={isFail ? "text-red-600 font-semibold" : ""}>
-                    {row.grade?.gp.toFixed(2) ?? "-"}
-                  </TableCell>
-                  {!isStudent && (
+                  <TableCell className={isFail ? "text-red-600 font-semibold" : ""}>{row.grade?.gp.toFixed(2) ?? "-"}</TableCell>
+                  {!isStudent && !session?.isReadOnly && (
                     <TableCell className="text-right">
                       {row.result && (
-                        <Button size="icon" variant="ghost" onClick={() => actions.deleteResult(row.result!.id)}>
-                          <Trash2 className="size-4 text-destructive" />
-                        </Button>
+                        <Button size="icon" variant="ghost" onClick={() => actions.deleteResult(row.result!.id)}><Trash2 className="size-4 text-destructive" /></Button>
                       )}
                     </TableCell>
                   )}
@@ -131,7 +119,7 @@ function Results() {
         </Table>
       </div>
 
-      {!isStudent && st && allSubjects.length > 0 && (
+      {!isStudent && !session?.isReadOnly && st && allSubjects.length > 0 && (
         <form onSubmit={add} className="flex flex-wrap gap-3 mt-4 items-end bg-card p-4 rounded-lg border shadow-sm">
           <div>
             <label className="text-xs text-muted-foreground block mb-1">Subject</label>
