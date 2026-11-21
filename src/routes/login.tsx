@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { GraduationCap } from "lucide-react";
+import { ArrowLeft, GraduationCap } from "lucide-react";
 import { toast } from "sonner";
-import { actions, DEPARTMENTS, SESSIONS, type Role } from "@/lib/store";
+import { actions, DEPARTMENTS, SESSIONS, useStore, type Role } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 export const Route = createFileRoute("/login")({ component: Login });
 
 function Login() {
+  const { isLoading } = useStore();
   const [role, setRole] = useState<Role>("admin");
   const [password, setPassword] = useState("");
   const [adminCode, setAdminCode] = useState("");
@@ -105,7 +106,15 @@ function Login() {
           <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
 
-        <Button type="submit" className="w-full">Login</Button>
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? "Loading data…" : "Login"}
+        </Button>
+        <Link
+          to="/"
+          className="flex w-fit items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
+        >
+          <ArrowLeft className="size-4" /> Back to Home
+        </Link>
       </form>
     </div>
   );

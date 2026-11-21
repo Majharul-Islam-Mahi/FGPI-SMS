@@ -17,6 +17,7 @@ export const Route = createFileRoute("/student-portal")({ component: StudentPort
 function StudentPortal() {
   const { session, students, attendance, results, routines, fees, applications } = useStore();
   const me = students.find(s => s.id === session?.studentId);
+  const [avatarFailed, setAvatarFailed] = useState(false);
 
   const [type, setType] = useState("Sick Leave");
   const [reason, setReason] = useState("");
@@ -45,8 +46,17 @@ function StudentPortal() {
   return (
     <AppShell title="My Portal · আমার পোর্টাল" roles={["student"]}>
       <div className="mb-6 bg-primary/5 border border-primary/20 p-6 rounded-xl flex items-center gap-6">
-        <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center text-3xl font-bold text-primary">
-          {me.name.charAt(0)}
+        <div className="w-20 h-20 bg-primary/20 rounded-full overflow-hidden flex items-center justify-center text-3xl font-bold text-primary shrink-0">
+          {me.avatarUrl && !avatarFailed ? (
+            <img
+              src={me.avatarUrl}
+              alt={`${me.name}'s profile`}
+              className="w-full h-full object-cover"
+              onError={() => setAvatarFailed(true)}
+            />
+          ) : (
+            me.name.charAt(0)
+          )}
         </div>
         <div>
           <h2 className="text-2xl font-bold text-primary">{me.name}</h2>

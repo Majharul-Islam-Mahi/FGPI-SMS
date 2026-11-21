@@ -24,13 +24,16 @@ import { Route as LibraryRouteImport } from './routes/library'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as NoticesRouteImport } from './routes/notices'
 import { Route as PresentationRouteImport } from './routes/presentation'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as RoutineRouteImport } from './routes/routine'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SmsRouteImport } from './routes/sms'
 import { Route as StudentPortalRouteImport } from './routes/student-portal'
 import { Route as StudentsRouteImport } from './routes/students'
 import { Route as SubjectsRouteImport } from './routes/subjects'
 import { Route as TeacherPortalRouteImport } from './routes/teacher-portal'
+import { Route as TeacherRegisterRouteImport } from './routes/teacher-register'
 import { Route as TransportRouteImport } from './routes/transport'
 
 const IndexRoute = IndexRouteImport.update({
@@ -108,6 +111,11 @@ const PresentationRoute = PresentationRouteImport.update({
   path: '/presentation',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResultsRoute = ResultsRouteImport.update({
   id: '/results',
   path: '/results',
@@ -116,6 +124,11 @@ const ResultsRoute = ResultsRouteImport.update({
 const RoutineRoute = RoutineRouteImport.update({
   id: '/routine',
   path: '/routine',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SmsRoute = SmsRouteImport.update({
@@ -143,6 +156,11 @@ const TeacherPortalRoute = TeacherPortalRouteImport.update({
   path: '/teacher-portal',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TeacherRegisterRoute = TeacherRegisterRouteImport.update({
+  id: '/teacher-register',
+  path: '/teacher-register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TransportRoute = TransportRouteImport.update({
   id: '/transport',
   path: '/transport',
@@ -165,13 +183,16 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/notices': typeof NoticesRoute
   '/presentation': typeof PresentationRoute
+  '/profile': typeof ProfileRoute
   '/results': typeof ResultsRoute
   '/routine': typeof RoutineRoute
+  '/settings': typeof SettingsRoute
   '/sms': typeof SmsRoute
   '/student-portal': typeof StudentPortalRoute
   '/students': typeof StudentsRoute
   '/subjects': typeof SubjectsRoute
   '/teacher-portal': typeof TeacherPortalRoute
+  '/teacher-register': typeof TeacherRegisterRoute
   '/transport': typeof TransportRoute
 }
 export interface FileRoutesByTo {
@@ -190,13 +211,16 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/notices': typeof NoticesRoute
   '/presentation': typeof PresentationRoute
+  '/profile': typeof ProfileRoute
   '/results': typeof ResultsRoute
   '/routine': typeof RoutineRoute
+  '/settings': typeof SettingsRoute
   '/sms': typeof SmsRoute
   '/student-portal': typeof StudentPortalRoute
   '/students': typeof StudentsRoute
   '/subjects': typeof SubjectsRoute
   '/teacher-portal': typeof TeacherPortalRoute
+  '/teacher-register': typeof TeacherRegisterRoute
   '/transport': typeof TransportRoute
 }
 export interface FileRoutesById {
@@ -216,13 +240,16 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/notices': typeof NoticesRoute
   '/presentation': typeof PresentationRoute
+  '/profile': typeof ProfileRoute
   '/results': typeof ResultsRoute
   '/routine': typeof RoutineRoute
+  '/settings': typeof SettingsRoute
   '/sms': typeof SmsRoute
   '/student-portal': typeof StudentPortalRoute
   '/students': typeof StudentsRoute
   '/subjects': typeof SubjectsRoute
   '/teacher-portal': typeof TeacherPortalRoute
+  '/teacher-register': typeof TeacherRegisterRoute
   '/transport': typeof TransportRoute
 }
 export interface FileRouteTypes {
@@ -243,13 +270,16 @@ export interface FileRouteTypes {
     | '/login'
     | '/notices'
     | '/presentation'
+    | '/profile'
     | '/results'
     | '/routine'
+    | '/settings'
     | '/sms'
     | '/student-portal'
     | '/students'
     | '/subjects'
     | '/teacher-portal'
+    | '/teacher-register'
     | '/transport'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -268,13 +298,16 @@ export interface FileRouteTypes {
     | '/login'
     | '/notices'
     | '/presentation'
+    | '/profile'
     | '/results'
     | '/routine'
+    | '/settings'
     | '/sms'
     | '/student-portal'
     | '/students'
     | '/subjects'
     | '/teacher-portal'
+    | '/teacher-register'
     | '/transport'
   id:
     | '__root__'
@@ -293,13 +326,16 @@ export interface FileRouteTypes {
     | '/login'
     | '/notices'
     | '/presentation'
+    | '/profile'
     | '/results'
     | '/routine'
+    | '/settings'
     | '/sms'
     | '/student-portal'
     | '/students'
     | '/subjects'
     | '/teacher-portal'
+    | '/teacher-register'
     | '/transport'
   fileRoutesById: FileRoutesById
 }
@@ -319,13 +355,16 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   NoticesRoute: typeof NoticesRoute
   PresentationRoute: typeof PresentationRoute
+  ProfileRoute: typeof ProfileRoute
   ResultsRoute: typeof ResultsRoute
   RoutineRoute: typeof RoutineRoute
+  SettingsRoute: typeof SettingsRoute
   SmsRoute: typeof SmsRoute
   StudentPortalRoute: typeof StudentPortalRoute
   StudentsRoute: typeof StudentsRoute
   SubjectsRoute: typeof SubjectsRoute
   TeacherPortalRoute: typeof TeacherPortalRoute
+  TeacherRegisterRoute: typeof TeacherRegisterRoute
   TransportRoute: typeof TransportRoute
 }
 
@@ -436,6 +475,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PresentationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/results': {
       id: '/results'
       path: '/results'
@@ -448,6 +494,13 @@ declare module '@tanstack/react-router' {
       path: '/routine'
       fullPath: '/routine'
       preLoaderRoute: typeof RoutineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sms': {
@@ -485,6 +538,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeacherPortalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/teacher-register': {
+      id: '/teacher-register'
+      path: '/teacher-register'
+      fullPath: '/teacher-register'
+      preLoaderRoute: typeof TeacherRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/transport': {
       id: '/transport'
       path: '/transport'
@@ -511,13 +571,16 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   NoticesRoute: NoticesRoute,
   PresentationRoute: PresentationRoute,
+  ProfileRoute: ProfileRoute,
   ResultsRoute: ResultsRoute,
   RoutineRoute: RoutineRoute,
+  SettingsRoute: SettingsRoute,
   SmsRoute: SmsRoute,
   StudentPortalRoute: StudentPortalRoute,
   StudentsRoute: StudentsRoute,
   SubjectsRoute: SubjectsRoute,
   TeacherPortalRoute: TeacherPortalRoute,
+  TeacherRegisterRoute: TeacherRegisterRoute,
   TransportRoute: TransportRoute,
 }
 export const routeTree = rootRouteImport

@@ -13,6 +13,7 @@ export const Route = createFileRoute("/idcard")({ component: IdCardPage });
 function IdCardPage() {
   const { students, session } = useStore();
   const [sid, setSid] = useState("");
+  const [avatarFailed, setAvatarFailed] = useState(false);
 
   // স্টুডেন্ট লগইন করলে সে শুধু নিজের আইডি কার্ড দেখবে
   const isStudent = session?.role === "student";
@@ -116,8 +117,17 @@ function IdCardPage() {
             {/* Card Body */}
             <div className="p-6 flex gap-5 items-center">
               {/* Avatar Placeholder */}
-              <div className="w-24 h-24 rounded-2xl bg-linear-to-br from-primary to-[#02140D] border-2 border-gold flex items-center justify-center text-4xl font-bold text-gold shadow-inner shrink-0">
-                {st.name.charAt(0)}
+              <div className="w-24 h-24 rounded-2xl bg-linear-to-br from-primary to-[#02140D] border-2 border-gold overflow-hidden flex items-center justify-center text-4xl font-bold text-gold shadow-inner shrink-0">
+                {st.avatarUrl && !avatarFailed ? (
+                  <img
+                    src={st.avatarUrl}
+                    alt={`${st.name}'s profile`}
+                    className="w-full h-full object-cover"
+                    onError={() => setAvatarFailed(true)}
+                  />
+                ) : (
+                  st.name.charAt(0)
+                )}
               </div>
 
               <div className="space-y-1.5 flex-1">
